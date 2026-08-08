@@ -1,0 +1,27 @@
+:root {
+  --text: #333;
+  --bg: #fafafa;
+  font:
+    16px/1.5 system-ui,
+    "Segoe UI",
+    Roboto,
+    "Hiragino Kaku Gothic ProN",
+    "Noto Sans JP",
+    sans-serif;
+  color: var(--text);
+  background: var(--bg);
+}
+
+body {
+  margin: 0;
+}
+
+h1 {
+  font-size: 1.8rem;
+  margin: 0.5rem 0 1rem;
+}
+
+h2 {
+  font-size: 1.2rem;
+  margin: 0 0 0.5rem;
+}
