@@ -43,3 +43,13 @@ npm run dev
 - `GET /api/properties/{id}` — 詳細(取込元の生テキストを含む)
 - `POST /api/ingest/email` — メール本文(JSON: `raw_text`)から物件を自動抽出して登録
 - `POST /api/ingest/pdf` — PDFファイルをアップロードしてテキスト抽出後、自動登録
+- `POST /api/ingest/gmail` — Gmailメッセージ1件(`message_id`, `subject`, `sender`, `raw_text` 等)から物件を自動抽出して登録。`message_id` による重複排除つき
+- `POST /api/ingest/gmail/batch` — 1通のメールに複数物件が併記されている場合に、物件ごとに分割して登録
+
+## Gmail連携の仕組み
+
+バックエンド自体はGmail APIの認証情報を持たない設計です。実際の取込は、Claude Code
+(Gmail接続済みのエージェントセッション)がGmailを検索・本文取得し、`is_property_listing()`
+でセミナー案内や交流会案内などのノイズメールを除外したうえで、`/api/ingest/gmail`
+(または複数物件併記メール向けの`/api/ingest/gmail/batch`)へ結果を送信することで実現しています。
+実際にユーザーの受信箱から業者メールを取得し、本ツールへ自動登録できることを確認済みです。

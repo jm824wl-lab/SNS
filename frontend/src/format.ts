@@ -12,3 +12,14 @@ export function formatDate(iso: string): string {
     minute: "2-digit",
   });
 }
+
+export function sourceLabel(sourceType: string): string {
+  switch (sourceType) {
+    case "pdf":
+      return "PDF取込";
+    case "gmail":
+      return "Gmail取込";
+    default:
+      return "メール取込";
+  }
+}

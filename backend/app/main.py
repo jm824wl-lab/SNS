@@ -9,6 +9,7 @@ from sqlalchemy.orm import Session
 from . import models, schemas
 from .database import Base, SessionLocal, engine, get_db
 from .ingest import ingest_raw_text
+from .parser import is_property_listing, split_listings
 from .pdf_seed import generate_seed_pdf
 
 Base.metadata.create_all(bind=engine)
@@ -124,3 +125,86 @@ async def ingest_pdf(file: UploadFile = File(...), db: Session = Depends(get_db)
         raise HTTPException(status_code=422, detail="PDFからテキストを抽出できませんでした")
 
     return ingest_raw_text(db, text, source_type="pdf", filename=file.filename)
+
+
+@app.post("/api/ingest/gmail", response_model=schemas.PropertyDetail)
+def ingest_gmail(payload: schemas.GmailIngestRequest, db: Session = Depends(get_db)):
+    existing = (
+        db.query(models.Property)
+        .filter(models.Property.gmail_message_id == payload.message_id)
+        .first()
+    )
+    if existing:
+        return existing
+
+    header_lines = []
+    if payload.subject:
+        header_lines.append(f"件名: {payload.subject}")
+    if payload.sender:
+        header_lines.append(f"差出人: {payload.sender}")
+    combined_text = "\n".join(header_lines) + ("\n\n" if header_lines else "") + payload.raw_text
+
+    if not payload.force and not is_property_listing(combined_text):
+        raise HTTPException(
+            status_code=422,
+            detail="物件情報として認識できませんでした(ノイズメールの可能性があります)。force=trueで強制取込できます。",
+        )
+
+    return ingest_raw_text(
+        db,
+        combined_text,
+        source_type="gmail",
+        gmail_message_id=payload.message_id,
+        gmail_thread_id=payload.thread_id,
+        received_at=payload.received_at,
+    )
+
+
+@app.post("/api/ingest/gmail/batch", response_model=list[schemas.PropertyDetail])
+def ingest_gmail_batch(payload: schemas.GmailIngestRequest, db: Session = Depends(get_db)):
+    """1通のメールに複数物件が併記されているケースに対応する取込エンドポイント。
+
+    本文を物件ごとに分割し、それぞれについて物件情報らしいと判定できたものだけを
+    (Gmailメッセージ内の連番付きIDで重複排除しつつ)登録する。
+    """
+    header_lines = []
+    if payload.subject:
+        header_lines.append(f"件名: {payload.subject}")
+    if payload.sender:
+        header_lines.append(f"差出人: {payload.sender}")
+    header = "\n".join(header_lines) + ("\n\n" if header_lines else "")
+
+    chunks = split_listings(payload.raw_text)
+    results: list[models.Property] = []
+
+    for idx, chunk_text in enumerate(chunks):
+        msg_id = payload.message_id if len(chunks) == 1 else f"{payload.message_id}::{idx}"
+
+        existing = (
+            db.query(models.Property).filter(models.Property.gmail_message_id == msg_id).first()
+        )
+        if existing:
+            results.append(existing)
+            continue
+
+        combined_text = header + chunk_text
+        if not payload.force and not is_property_listing(combined_text):
+            continue
+
+        results.append(
+            ingest_raw_text(
+                db,
+                combined_text,
+                source_type="gmail",
+                gmail_message_id=msg_id,
+                gmail_thread_id=payload.thread_id,
+                received_at=payload.received_at,
+            )
+        )
+
+    if not results:
+        raise HTTPException(
+            status_code=422,
+            detail="物件情報として認識できませんでした(ノイズメールの可能性があります)。force=trueで強制取込できます。",
+        )
+    return results

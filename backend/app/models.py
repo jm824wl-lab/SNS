@@ -26,9 +26,18 @@ class Property(Base):
 
     agent_name = Column(String, nullable=True)  # 送信元業者
 
-    source_type = Column(String, nullable=False)  # email / pdf
+    land_tsubo_label = Column(String, nullable=True)  # 土地面積(坪)
+    building_tsubo_label = Column(String, nullable=True)  # 建物面積(坪)
+    structure = Column(String, nullable=True)  # 構造(RC造5階建 等)
+    units = Column(String, nullable=True)  # 総戸数(全14戸 等)
+    yield_label = Column(String, nullable=True)  # 利回り
+
+    source_type = Column(String, nullable=False)  # email / pdf / gmail
     source_filename = Column(String, nullable=True)
     raw_text = Column(Text, nullable=False)
+
+    gmail_message_id = Column(String, nullable=True, unique=True, index=True)
+    gmail_thread_id = Column(String, nullable=True)
 
     received_at = Column(DateTime, default=datetime.utcnow)
     created_at = Column(DateTime, default=datetime.utcnow)

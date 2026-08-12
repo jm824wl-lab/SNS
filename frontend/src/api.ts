@@ -14,6 +14,11 @@ export interface PropertyListItem {
   area_sqm: number | null;
   built_year: string | null;
   agent_name: string | null;
+  land_tsubo_label: string | null;
+  building_tsubo_label: string | null;
+  structure: string | null;
+  units: string | null;
+  yield_label: string | null;
   source_type: string;
   source_filename: string | null;
   received_at: string;
@@ -21,6 +26,8 @@ export interface PropertyListItem {
 
 export interface PropertyDetail extends PropertyListItem {
   raw_text: string;
+  gmail_message_id: string | null;
+  gmail_thread_id: string | null;
 }
 
 export interface PropertyListResponse {

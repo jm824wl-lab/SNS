@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { fetchProperties, type PropertyListItem, type PropertySearchParams } from "../api";
-import { formatYen } from "../format";
+import { formatYen, sourceLabel } from "../format";
 
 export default function PropertyList() {
   const [items, setItems] = useState<PropertyListItem[]>([]);
@@ -79,7 +79,7 @@ export default function PropertyList() {
               <span className={`badge ${item.transaction_type === "売買" ? "badge-sale" : "badge-rent"}`}>
                 {item.transaction_type ?? "不明"}
               </span>
-              <span className="source-tag">{item.source_type === "pdf" ? "PDF取込" : "メール取込"}</span>
+              <span className="source-tag">{sourceLabel(item.source_type)}</span>
             </div>
             <h2>{item.title}</h2>
             <p className="price">{item.price_label ?? formatYen(item.price_yen)}</p>
@@ -89,6 +89,8 @@ export default function PropertyList() {
               {item.layout && <span className="tag">{item.layout}</span>}
               {item.area_sqm && <span className="tag">{item.area_sqm}㎡</span>}
               {item.built_year && <span className="tag">{item.built_year}</span>}
+              {item.yield_label && <span className="tag">利回り{item.yield_label}</span>}
+              {item.units && <span className="tag">{item.units}</span>}
             </div>
           </Link>
         ))}

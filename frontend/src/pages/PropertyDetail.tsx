@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { fetchProperty, type PropertyDetail as PropertyDetailType } from "../api";
-import { formatDate, formatYen } from "../format";
+import { formatDate, formatYen, sourceLabel } from "../format";
 
 export default function PropertyDetail() {
   const { id } = useParams();
@@ -27,9 +27,14 @@ export default function PropertyDetail() {
     ["間取り", property.layout],
     ["専有面積", property.area_sqm ? `${property.area_sqm}㎡` : null],
     ["築年数", property.built_year],
+    ["土地面積", property.land_tsubo_label],
+    ["建物面積", property.building_tsubo_label],
+    ["構造", property.structure],
+    ["総戸数", property.units],
+    ["利回り", property.yield_label],
     ["担当", property.agent_name],
     ["ステータス", property.status],
-    ["取込元", property.source_type === "pdf" ? "PDF" : "メール"],
+    ["取込元", sourceLabel(property.source_type)],
     ["受信日時", formatDate(property.received_at)],
   ];
 

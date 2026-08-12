@@ -17,6 +17,11 @@ class PropertyBase(BaseModel):
     area_sqm: Optional[float] = None
     built_year: Optional[str] = None
     agent_name: Optional[str] = None
+    land_tsubo_label: Optional[str] = None
+    building_tsubo_label: Optional[str] = None
+    structure: Optional[str] = None
+    units: Optional[str] = None
+    yield_label: Optional[str] = None
     source_type: str
     source_filename: Optional[str] = None
     received_at: datetime
@@ -29,6 +34,8 @@ class PropertyListItem(PropertyBase):
 
 class PropertyDetail(PropertyListItem):
     raw_text: str
+    gmail_message_id: Optional[str] = None
+    gmail_thread_id: Optional[str] = None
 
 
 class PropertyListResponse(BaseModel):
@@ -39,3 +46,13 @@ class PropertyListResponse(BaseModel):
 class IngestEmailRequest(BaseModel):
     raw_text: str
     filename: Optional[str] = None
+
+
+class GmailIngestRequest(BaseModel):
+    message_id: str
+    thread_id: Optional[str] = None
+    subject: Optional[str] = None
+    sender: Optional[str] = None
+    raw_text: str
+    received_at: Optional[datetime] = None
+    force: bool = False

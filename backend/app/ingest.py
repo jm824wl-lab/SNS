@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 
 from sqlalchemy.orm import Session
 
@@ -6,7 +7,15 @@ from . import models
 from .parser import extract_property
 
 
-def ingest_raw_text(db: Session, raw_text: str, source_type: str, filename: str | None = None) -> models.Property:
+def ingest_raw_text(
+    db: Session,
+    raw_text: str,
+    source_type: str,
+    filename: Optional[str] = None,
+    gmail_message_id: Optional[str] = None,
+    gmail_thread_id: Optional[str] = None,
+    received_at: Optional[datetime] = None,
+) -> models.Property:
     fields = extract_property(raw_text)
     prop = models.Property(
         title=fields["title"],
@@ -21,10 +30,17 @@ def ingest_raw_text(db: Session, raw_text: str, source_type: str, filename: str 
         area_sqm=fields["area_sqm"],
         built_year=fields["built_year"],
         agent_name=fields["agent_name"],
+        land_tsubo_label=fields["land_tsubo_label"],
+        building_tsubo_label=fields["building_tsubo_label"],
+        structure=fields["structure"],
+        units=fields["units"],
+        yield_label=fields["yield_label"],
         source_type=source_type,
         source_filename=filename,
         raw_text=raw_text,
-        received_at=datetime.utcnow(),
+        gmail_message_id=gmail_message_id,
+        gmail_thread_id=gmail_thread_id,
+        received_at=received_at or datetime.utcnow(),
         created_at=datetime.utcnow(),
     )
     db.add(prop)
