@@ -40,12 +40,24 @@ def _to_int_yen(raw: Optional[str]) -> Optional[int]:
     if not raw:
         return None
     raw = raw.replace(",", "").replace("円", "").strip()
+
+    total = 0.0
+    found = False
+
+    oku_match = re.search(r"([\d.]+)\s*億", raw)
+    if oku_match:
+        total += float(oku_match.group(1)) * 100_000_000
+        found = True
+        raw = raw[oku_match.end():]
+
     man_match = re.search(r"([\d.]+)\s*万", raw)
     if man_match:
-        try:
-            return int(float(man_match.group(1)) * 10000)
-        except ValueError:
-            return None
+        total += float(man_match.group(1)) * 10_000
+        found = True
+
+    if found:
+        return int(total)
+
     digits = re.sub(r"[^\d]", "", raw)
     return int(digits) if digits else None
 
