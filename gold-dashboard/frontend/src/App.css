@@ -1,0 +1,477 @@
+.app-shell {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 24px 20px 48px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.app-header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 12px;
+}
+
+.app-header h1 {
+  margin: 0 0 4px;
+  font-size: 22px;
+}
+
+.app-subtitle {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.app-header-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.updated-at {
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.refresh-button,
+.table-toggle,
+.range-button {
+  border: 1px solid var(--border-hairline);
+  background: var(--surface-1);
+  color: var(--text-primary);
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.refresh-button:hover,
+.table-toggle:hover,
+.range-button:hover {
+  background: var(--series-1-tint);
+}
+
+.banner-error {
+  background: var(--status-critical);
+  color: #fff;
+  padding: 10px 14px;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+/* Stat tiles */
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.stat-tile {
+  background: var(--surface-1);
+  border: 1px solid var(--border-hairline);
+  border-radius: 10px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.stat-tile-emphasized {
+  border-color: var(--series-1);
+  background: var(--series-1-tint);
+}
+
+.stat-tile-head {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-tile-label {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.stat-tile-sublabel {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.stat-tile-value {
+  font-size: 22px;
+  font-weight: 600;
+  font-variant-numeric: proportional-nums;
+}
+
+.stat-tile-unit {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--text-muted);
+  margin-left: 6px;
+}
+
+.stat-tile-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.stat-tile-delta {
+  font-size: 12px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.delta-up {
+  color: var(--color-up);
+}
+
+.delta-down {
+  color: var(--color-down);
+}
+
+.sparkline {
+  width: 96px;
+  height: 28px;
+  flex-shrink: 0;
+}
+
+.sparkline-dim {
+  stroke: var(--baseline);
+  stroke-width: 2;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.sparkline-accent-up {
+  stroke: var(--color-up);
+  stroke-width: 2;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.sparkline-accent-down {
+  stroke: var(--color-down);
+  stroke-width: 2;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+/* Panels */
+.panel {
+  background: var(--surface-1);
+  border: 1px solid var(--border-hairline);
+  border-radius: 10px;
+  padding: 16px;
+}
+
+.panel h2 {
+  margin: 0 0 12px;
+  font-size: 16px;
+}
+
+.content-columns {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+  gap: 16px;
+}
+
+@media (max-width: 860px) {
+  .content-columns {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Chart panel */
+.chart-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.range-selector {
+  display: flex;
+  gap: 6px;
+}
+
+.range-button-active {
+  background: var(--series-1);
+  border-color: var(--series-1);
+  color: #fff;
+}
+
+.price-chart {
+  position: relative;
+}
+
+.price-chart-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.price-chart-title {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.price-chart-unit {
+  color: var(--text-muted);
+}
+
+.price-chart-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  touch-action: none;
+}
+
+.chart-gridline {
+  stroke: var(--gridline);
+  stroke-width: 1;
+}
+
+.chart-axis-label {
+  fill: var(--text-muted);
+  font-size: 11px;
+}
+
+.chart-line {
+  stroke: var(--series-1);
+  stroke-width: 2;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.chart-crosshair {
+  stroke: var(--baseline);
+  stroke-width: 1;
+}
+
+.chart-dot {
+  fill: var(--series-1);
+  stroke: var(--surface-1);
+  stroke-width: 2;
+}
+
+.chart-tooltip {
+  position: absolute;
+  transform: translate(-50%, -120%);
+  background: var(--surface-1);
+  border: 1px solid var(--border-hairline);
+  border-radius: 6px;
+  padding: 6px 10px;
+  pointer-events: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  white-space: nowrap;
+}
+
+.chart-tooltip-value {
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.chart-tooltip-label {
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+.chart-empty {
+  padding: 40px;
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.price-chart-table-wrap {
+  max-height: 300px;
+  overflow: auto;
+}
+
+.price-chart-table {
+  width: 100%;
+  font-size: 13px;
+}
+
+.price-chart-table th,
+.price-chart-table td {
+  text-align: left;
+  padding: 4px 8px;
+  border-bottom: 1px solid var(--gridline);
+}
+
+.price-chart-table .num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* News feed */
+.news-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-height: 560px;
+  overflow-y: auto;
+}
+
+.news-item {
+  border-bottom: 1px solid var(--gridline);
+  padding-bottom: 12px;
+}
+
+.news-item:last-child {
+  border-bottom: none;
+}
+
+.news-item-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.news-source {
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.news-title {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.news-summary {
+  margin: 0 0 6px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.news-tags {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.news-tag {
+  font-size: 11px;
+  color: var(--text-muted);
+  background: var(--page-plane);
+  border: 1px solid var(--border-hairline);
+  border-radius: 4px;
+  padding: 1px 6px;
+}
+
+/* Impact / importance badges */
+.impact-badge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  border-radius: 4px;
+  padding: 1px 7px;
+}
+
+.impact-high {
+  background: var(--status-critical);
+  color: #fff;
+}
+
+.impact-medium {
+  background: var(--status-warning);
+  color: #3a2900;
+}
+
+.impact-low {
+  background: var(--page-plane);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-hairline);
+}
+
+/* Economic calendar */
+.calendar-table-wrap {
+  overflow-x: auto;
+  max-height: 560px;
+  overflow-y: auto;
+}
+
+.calendar-table {
+  width: 100%;
+  font-size: 13px;
+  min-width: 980px;
+  table-layout: fixed;
+}
+
+.col-datetime {
+  width: 120px;
+}
+
+.col-country {
+  width: 44px;
+}
+
+.col-name {
+  width: 220px;
+}
+
+.col-importance {
+  width: 64px;
+}
+
+.col-value {
+  width: 90px;
+}
+
+.col-note {
+  width: auto;
+}
+
+.calendar-table th {
+  text-align: left;
+  font-size: 11px;
+  color: var(--text-muted);
+  font-weight: 600;
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--gridline);
+  position: sticky;
+  top: 0;
+  background: var(--surface-1);
+}
+
+.calendar-table td {
+  padding: 8px;
+  border-bottom: 1px solid var(--gridline);
+  vertical-align: top;
+}
+
+.calendar-table .nowrap {
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.calendar-table .num {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.calendar-note {
+  color: var(--text-secondary);
+  font-size: 12px;
+  min-width: 220px;
+}
+
+.app-footer {
+  text-align: center;
+  font-size: 12px;
+  color: var(--text-muted);
+  padding-top: 8px;
+}
