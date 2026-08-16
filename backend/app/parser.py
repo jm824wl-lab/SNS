@@ -66,22 +66,20 @@ def split_listings(raw_text: str) -> list[str]:
     """1通のメール本文に複数物件が【物件名】見出しで併記されている場合、
     物件ごとのテキストに分割する。見出しが1つ以下ならそのまま1件として返す。
 
-    末尾の物件以降にある署名(会社名・連絡先)は、担当者名の抽出のために
-    先頭の物件チャンクにも付与する。
+    末尾の物件の後に続くテキストには、署名(会社名・連絡先)だけでなく
+    最後の物件自体の価格・利回りなどの情報が含まれることがあるため、
+    他のチャンクへは一切付与しない(誤って他物件のデータとして
+    抽出されるのを防ぐため)。
     """
     matches = list(_LISTING_HEADING.finditer(raw_text))
     if len(matches) < 2:
         return [raw_text]
-
-    tail_signature = raw_text[matches[-1].end():].strip()
 
     chunks = []
     for i, m in enumerate(matches):
         start = m.start()
         end = matches[i + 1].start() if i + 1 < len(matches) else len(raw_text)
         chunk = raw_text[start:end].strip()
-        if i < len(matches) - 1 and tail_signature:
-            chunk = f"{chunk}\n\n{tail_signature}"
         chunks.append(chunk)
     return chunks
 
@@ -159,7 +157,7 @@ def extract_property(raw_text: str) -> dict:
 
     structure = _search(r"((?:RC|SRC|S|木)造[^\n、。]*)", text)
     units = _search(r"(全\s*\d+\s*戸)", text)
-    yield_label = _search(r"(?:満室想定)?利回り[:：]?\s*([\d.]+\s*[%％])", text)
+    yield_label = _search(r"(?:満室想定)?利回り[:：]?\s*(?:約)?\s*([\d.]+\s*[%％])", text)
 
     price_raw = None
     if transaction_type == "売買":
