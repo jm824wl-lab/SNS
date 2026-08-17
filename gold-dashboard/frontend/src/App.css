@@ -63,6 +63,12 @@
   font-size: 14px;
 }
 
+.panel-error {
+  color: var(--status-critical);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
 /* Stat tiles */
 .stat-grid {
   display: grid;

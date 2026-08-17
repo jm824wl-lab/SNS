@@ -46,8 +46,8 @@ export default function EconCalendar({ events }: Props) {
                   {IMPORTANCE_LABEL[ev.importance]}
                 </span>
               </td>
-              <td className="num">{ev.previous}</td>
-              <td className="num">{ev.forecast}</td>
+              <td className="num">{ev.previous ?? "—"}</td>
+              <td className="num">{ev.forecast ?? "—"}</td>
               <td className="calendar-note">{ev.note}</td>
             </tr>
           ))}

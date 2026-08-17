@@ -12,8 +12,28 @@
   日時・価格をツールチップ表示。表形式表示への切り替えも可能
 - **マーケットニュース**: 金相場に関連するニュースを重要度・関連銘柄タグ付きで一覧表示
 - **経済指標カレンダー**: FOMC・米雇用統計・CPIなど、金相場への影響が大きい経済指標の
-  発表予定を重要度・前回値・予想値・金相場への影響メモ付きで一覧表示
+  発表予定を重要度・発表日・金相場への影響メモ付きで一覧表示
 - 15秒ごとに価格を自動更新(手動更新ボタンあり)
+
+## データソース
+
+全て実データを取得します(登録不要のものと、無料APIキーが必要なものがあります)。
+
+| データ | 取得元 | 登録 |
+|---|---|---|
+| 価格(現在値・チャート) | [Yahoo Finance](https://finance.yahoo.com/)(`yfinance`ライブラリ経由・非公式) | 不要 |
+| マーケットニュース | [Google News RSS検索](https://news.google.com/) | 不要 |
+| 経済指標カレンダー | [FRED](https://fred.stlouisfed.org/)(セントルイス連銀 公式API) | 無料APIキーが必要 |
+
+**注意点**
+
+- 価格取得(`yfinance`)はYahoo Financeの非公式な内部エンドポイントを利用しています。
+  Yahoo側の仕様変更で将来動かなくなる可能性があります
+- ニュースは見出しをキーワードで簡易分類しているだけで、重要度・関連銘柄タグは
+  厳密な編集判断ではありません
+- 経済指標カレンダーはFREDから実際の発表日を取得しますが、FREDは統計データの公式APIであり
+  「予想値」を提供していないため、予想値・前回値欄は表示されません(発表日・重要度・
+  金相場への影響メモのみ)
 
 ## 構成
 
@@ -24,17 +44,26 @@
 
 ## セットアップ
 
-### backend
+### 1. FRED APIキーを取得(経済指標カレンダーに必要)
+
+1. https://fred.stlouisfed.org/docs/api/api_key.html にアクセスし、無料アカウントを作成
+2. APIキーを発行(数分で完了・無料)
+
+### 2. backend
 
 ```bash
 cd backend
 python3 -m venv venv
-source venv/bin/activate
+source venv/bin/activate      # Windowsは venv\Scripts\Activate.ps1
 pip install -r requirements.txt
+cp .env.example .env          # .env を編集して FRED_API_KEY=取得したキー を設定
 uvicorn app.main:app --reload --port 8000
 ```
 
-### frontend
+FRED_API_KEYが未設定の場合、`/api/calendar` はエラーメッセージ付きで失敗します
+(価格・ニュースは影響を受けません)。
+
+### 3. frontend
 
 ```bash
 cd frontend
@@ -44,19 +73,6 @@ npm run dev
 ```
 
 `http://localhost:5173` でダッシュボードを確認できます。
-
-## データについて
-
-価格・ニュース・経済指標は全てサンプル(モック)データです。価格はリアルな水準を基準に
-ランダムウォークでそれっぽく変動させているだけで、実際の相場ではありません。
-本番運用では以下の置き換えを想定しています。
-
-- 価格: `backend/app/instruments.py` の `get_quote` / `history` を、実際の相場データAPI
-  (例: 各種金融データベンダーのREST/WebSocket API)からの取得に置き換える
-- ニュース: `backend/app/news_data.py` を、ニュースAPI(または RSS/スクレイピング)からの
-  取得に置き換える
-- 経済指標カレンダー: `backend/app/calendar_data.py` を、経済指標カレンダーAPIからの取得に
-  置き換える
 
 ## API概要
 

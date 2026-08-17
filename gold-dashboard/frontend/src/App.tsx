@@ -30,6 +30,8 @@ function App() {
   const [mainHistory, setMainHistory] = useState<HistoryPoint[]>([]);
   const [lastUpdated, setLastUpdated] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [newsError, setNewsError] = useState<string | null>(null);
+  const [calendarError, setCalendarError] = useState<string | null>(null);
 
   const loadPrices = useCallback(async () => {
     try {
@@ -67,8 +69,18 @@ function App() {
 
   useEffect(() => {
     loadPrices();
-    fetchNews().then(setNews).catch(() => {});
-    fetchCalendar().then(setCalendar).catch(() => {});
+    fetchNews()
+      .then((data) => {
+        setNews(data);
+        setNewsError(null);
+      })
+      .catch((e) => setNewsError(e instanceof Error ? e.message : "ニュースの取得に失敗しました"));
+    fetchCalendar()
+      .then((data) => {
+        setCalendar(data);
+        setCalendarError(null);
+      })
+      .catch((e) => setCalendarError(e instanceof Error ? e.message : "経済指標カレンダーの取得に失敗しました"));
     const interval = setInterval(loadPrices, PRICE_REFRESH_MS);
     return () => clearInterval(interval);
   }, [loadPrices]);
@@ -139,17 +151,18 @@ function App() {
       <div className="content-columns">
         <section className="panel" aria-label="マーケットニュース">
           <h2>マーケットニュース</h2>
-          <NewsFeed items={news} />
+          {newsError ? <div className="panel-error">{newsError}</div> : <NewsFeed items={news} />}
         </section>
 
         <section className="panel" aria-label="経済指標カレンダー">
           <h2>経済指標カレンダー</h2>
-          <EconCalendar events={calendar} />
+          {calendarError ? <div className="panel-error">{calendarError}</div> : <EconCalendar events={calendar} />}
         </section>
       </div>
 
       <footer className="app-footer">
-        価格・ニュース・経済指標は全てサンプル(モック)データです。実運用では実際の相場データAPI・ニュースAPI・経済指標カレンダーAPIに接続してください。
+        価格はYahoo Finance、ニュースはGoogle News、経済指標カレンダーはFRED(セントルイス連銀)から取得しています。
+        いずれも非公式な取得方法または簡易的な分類を含むため、実際の取引判断は必ず一次情報でご確認ください。
       </footer>
     </div>
   );

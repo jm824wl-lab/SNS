@@ -34,8 +34,8 @@ export interface CalendarEvent {
   country: string;
   name: string;
   importance: "high" | "medium" | "low";
-  previous: string;
-  forecast: string;
+  previous: string | null;
+  forecast: string | null;
   note: string;
 }
 

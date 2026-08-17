@@ -35,6 +35,6 @@ class CalendarEvent(BaseModel):
     country: str
     name: str
     importance: str
-    previous: str
-    forecast: str
+    previous: str | None = None
+    forecast: str | None = None
     note: str

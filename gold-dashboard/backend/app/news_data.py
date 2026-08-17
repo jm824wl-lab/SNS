@@ -1,131 +1,131 @@
-"""Mock market news feed.
+"""Market news via Google News RSS search — no API key required.
 
-Sample/mock data only — see README for the intended swap-in point for a
-real news API.
+Google News RSS (`news.google.com/rss/search`) is a keyless, stable way to
+pull recent headlines for a query. It has no concept of "impact" or
+"related symbols", so those are derived with simple keyword heuristics on
+the headline text — a best-effort classification, not a real editorial
+rating.
 """
 from __future__ import annotations
 
+import calendar
+import html
+import re
 import time
+from urllib.parse import quote
 
-_NOW = time.time()
-_HOUR = 3600.0
+import feedparser
 
-_RAW_ITEMS = [
-    dict(
-        hours_ago=1.2,
-        impact="high",
-        source="ロイター",
-        title="FRB高官、利下げペースは「データ次第」と発言 金は上値試す",
-        summary=(
-            "米連邦準備理事会(FRB)高官が講演で、追加利下げの是非は今後の雇用・物価指標"
-            "次第との見解を示した。実質金利低下観測が支援材料となり、金相場は堅調地合いを維持。"
-        ),
-        related=["XAUUSD", "DXY", "US10Y"],
-    ),
-    dict(
-        hours_ago=3.5,
-        impact="high",
-        source="ブルームバーグ",
-        title="中国人民銀行、9カ月連続で金準備を積み増し",
-        summary=(
-            "中国人民銀行(PBOC)の外貨準備統計で、金保有量が9カ月連続で増加したことが判明。"
-            "新興国中央銀行による外貨準備の分散需要が、金の下値を支える構造要因として引き続き意識される。"
-        ),
-        related=["XAUUSD"],
-    ),
-    dict(
-        hours_ago=6.0,
-        impact="medium",
-        source="Kitco News",
-        title="金ETF(SPDRゴールド・シェア)、残高が3営業日連続で増加",
-        summary=(
-            "世界最大の金ETFであるSPDRゴールド・シェアの保有残高が3営業日連続で増加。"
-            "投機筋だけでなく実需資金の流入が続いており、市場心理の改善を示唆している。"
-        ),
-        related=["XAUUSD"],
-    ),
-    dict(
-        hours_ago=9.0,
-        impact="medium",
-        source="日本経済新聞",
-        title="国内金価格、円安一服も高値圏でもみ合い",
-        summary=(
-            "国内の金小売価格は、ドル建て金価格の高止まりとドル円相場の一服感から、"
-            "1グラムあたり過去最高値圏でのもみ合いとなっている。個人投資家の売却も増加傾向。"
-        ),
-        related=["GOLDJPYG", "USDJPY"],
-    ),
-    dict(
-        hours_ago=13.0,
-        impact="high",
-        source="ロイター",
-        title="中東情勢緊迫化、安全資産としての金買いが再燃",
-        summary=(
-            "中東での地政学的リスクの高まりを受け、逃避需要から金先物に買いが入った。"
-            "原油相場も上昇し、インフレ再燃への警戒感も金相場の追い風となっている。"
-        ),
-        related=["XAUUSD", "WTI"],
-    ),
-    dict(
-        hours_ago=20.0,
-        impact="medium",
-        source="ブルームバーグ",
-        title="ドルインデックス、主要通貨に対して軟化",
-        summary=(
-            "米長期金利の上昇一服を背景にドルが主要通貨に対して軟化。"
-            "ドル建てで取引される金にとっては相対的な割安感につながりやすい地合い。"
-        ),
-        related=["DXY", "XAUUSD"],
-    ),
-    dict(
-        hours_ago=27.0,
-        impact="low",
-        source="Kitco News",
-        title="テクニカル分析:金は主要移動平均線上をキープ",
-        summary=(
-            "金価格は50日・200日移動平均線をいずれも上回って推移しており、"
-            "中期的な上昇トレンドは崩れていないとアナリストは指摘する。"
-        ),
-        related=["XAUUSD"],
-    ),
-    dict(
-        hours_ago=33.0,
-        impact="medium",
-        source="ロイター",
-        title="インド、祝祭シーズンを控え金の現物需要が季節的に増加",
-        summary=(
-            "インドでは結婚式シーズンや祝祭を控え、宝飾品向けの金現物需要が季節的に拡大。"
-            "現地プレミアムも上昇しており、アジア市場の実需が価格の下支え要因となっている。"
-        ),
-        related=["XAUUSD"],
-    ),
-    dict(
-        hours_ago=41.0,
-        impact="low",
-        source="日本経済新聞",
-        title="鉱山各社、金採掘コストの上昇を決算で報告",
-        summary=(
-            "大手鉱山会社の四半期決算で、エネルギーコストや人件費上昇を背景に"
-            "採掘コスト(AISC)の増加が相次いで報告された。供給サイドのコスト高が価格の下支えとの見方も。"
-        ),
-        related=["XAUUSD"],
-    ),
+NEWS_TTL_SECONDS = 600
+_USER_AGENT = "Mozilla/5.0 (compatible; GoldTraderDashboard/1.0)"
+
+_QUERIES = [
+    "金価格 OR ゴールド相場",
+    "FRB 利下げ OR FOMC",
+    "米雇用統計 OR CPI インフレ",
 ]
 
+_HIGH_IMPACT_KEYWORDS = ["FOMC", "FRB", "利上げ", "利下げ", "CPI", "雇用統計", "パウエル", "GDP"]
+_MEDIUM_IMPACT_KEYWORDS = ["ドル", "円安", "円高", "ETF", "中央銀行", "インフレ", "金利"]
 
-def list_news() -> list[dict]:
+_SYMBOL_KEYWORDS = {
+    "USDJPY": ["ドル円", "円安", "円高"],
+    "DXY": ["ドル指数", "ドルインデックス"],
+    "WTI": ["原油"],
+    "US10Y": ["米国債", "国債利回り"],
+}
+
+_news_cache: tuple[float, list[dict]] | None = None
+
+
+def _classify_impact(title: str) -> str:
+    if any(kw in title for kw in _HIGH_IMPACT_KEYWORDS):
+        return "high"
+    if any(kw in title for kw in _MEDIUM_IMPACT_KEYWORDS):
+        return "medium"
+    return "low"
+
+
+def _related_symbols(title: str) -> list[str]:
+    symbols = ["XAUUSD"]
+    for symbol, keywords in _SYMBOL_KEYWORDS.items():
+        if any(kw in title for kw in keywords):
+            symbols.append(symbol)
+    return symbols
+
+
+def _clean_summary(raw_summary: str, title: str) -> str:
+    text = re.sub(r"<[^>]+>", " ", raw_summary or "")
+    text = html.unescape(text).strip()
+    text = re.sub(r"\s+", " ", text)
+    if not text or text == title:
+        return ""
+    return text[:200]
+
+
+def _split_source(title: str) -> tuple[str, str]:
+    if " - " in title:
+        headline, source = title.rsplit(" - ", 1)
+        return headline.strip(), source.strip()
+    return title.strip(), "Google News"
+
+
+def _fetch_query(query: str) -> list[dict]:
+    url = f"https://news.google.com/rss/search?q={quote(query)}&hl=ja&gl=JP&ceid=JP:ja"
+    feed = feedparser.parse(url, agent=_USER_AGENT)
     items = []
-    for idx, raw in enumerate(_RAW_ITEMS):
-        published_at = _NOW - raw["hours_ago"] * _HOUR
+    for entry in feed.entries[:8]:
+        raw_title = getattr(entry, "title", "").strip()
+        if not raw_title:
+            continue
+        headline, source = _split_source(raw_title)
+
+        if getattr(entry, "published_parsed", None):
+            published_at = calendar.timegm(entry.published_parsed)
+        else:
+            published_at = time.time()
+
         items.append(
             {
-                "id": idx + 1,
-                "title": raw["title"],
-                "summary": raw["summary"],
-                "source": raw["source"],
-                "impact": raw["impact"],
-                "related_symbols": raw["related"],
+                "title": headline,
+                "summary": _clean_summary(getattr(entry, "summary", ""), raw_title),
+                "source": source,
+                "impact": _classify_impact(headline),
+                "related_symbols": _related_symbols(headline),
                 "published_at": published_at,
             }
         )
-    return sorted(items, key=lambda x: x["published_at"], reverse=True)
+    return items
+
+
+def _fetch_all() -> list[dict]:
+    seen_titles: set[str] = set()
+    merged: list[dict] = []
+    for query in _QUERIES:
+        try:
+            for item in _fetch_query(query):
+                if item["title"] in seen_titles:
+                    continue
+                seen_titles.add(item["title"])
+                merged.append(item)
+        except Exception:  # noqa: BLE001 - one bad feed shouldn't break the rest
+            continue
+
+    merged.sort(key=lambda x: x["published_at"], reverse=True)
+    for idx, item in enumerate(merged):
+        item["id"] = idx + 1
+    return merged
+
+
+def list_news() -> list[dict]:
+    global _news_cache
+    now = time.time()
+    if _news_cache and now - _news_cache[0] < NEWS_TTL_SECONDS:
+        return _news_cache[1]
+
+    items = _fetch_all()
+    if not items and _news_cache:
+        return _news_cache[1]
+
+    _news_cache = (now, items)
+    return items

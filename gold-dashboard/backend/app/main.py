@@ -17,7 +17,10 @@ VALID_RANGES = ("1D", "1W", "1M", "3M", "1Y")
 
 @app.get("/api/prices", response_model=list[schemas.Quote])
 def get_prices():
-    return instruments.list_quotes()
+    try:
+        return instruments.list_quotes()
+    except instruments.MarketDataError as e:
+        raise HTTPException(status_code=503, detail=f"価格データの取得に失敗しました: {e}") from e
 
 
 @app.get("/api/prices/{symbol}/history", response_model=list[schemas.HistoryPoint])
@@ -31,7 +34,10 @@ def get_price_history(symbol: str, range: str = "1M"):
             status_code=400,
             detail=f"range は {', '.join(VALID_RANGES)} のいずれかを指定してください",
         )
-    return instruments.history(symbol, range)
+    try:
+        return instruments.history(symbol, range)
+    except instruments.MarketDataError as e:
+        raise HTTPException(status_code=503, detail=f"チャートデータの取得に失敗しました: {e}") from e
 
 
 @app.get("/api/news", response_model=list[schemas.NewsItem])
@@ -41,4 +47,7 @@ def get_news():
 
 @app.get("/api/calendar", response_model=list[schemas.CalendarEvent])
 def get_calendar():
-    return calendar_data.list_calendar()
+    try:
+        return calendar_data.list_calendar()
+    except calendar_data.CalendarDataError as e:
+        raise HTTPException(status_code=400, detail=str(e)) from e
