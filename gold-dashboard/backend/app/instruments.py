@@ -43,6 +43,8 @@ INSTRUMENTS: list[InstrumentSpec] = [
     InstrumentSpec("US10Y", "米10年国債利回り", "US 10Y Treasury Yield", "%", ("^TNX",), 3),
     InstrumentSpec("WTI", "WTI原油", "WTI Crude Oil", "USD/bbl", ("CL=F",), 2),
     InstrumentSpec("SPX", "S&P500", "S&P 500", "pt", ("^GSPC",), 1),
+    InstrumentSpec("NI225", "日経平均先物", "Nikkei 225 Futures", "pt", ("NIY=F", "^N225"), 0),
+    InstrumentSpec("DOW", "NYダウ先物", "Dow Jones Futures", "pt", ("YM=F", "^DJI"), 0),
 ]
 
 INSTRUMENTS_BY_SYMBOL = {spec.symbol: spec for spec in INSTRUMENTS}
