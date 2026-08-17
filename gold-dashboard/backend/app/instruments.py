@@ -37,7 +37,10 @@ INSTRUMENTS: list[InstrumentSpec] = [
     InstrumentSpec("GOLDJPYG", "国内金価格", "Domestic Gold (JPY/g)", "円/g", (), 0),
     InstrumentSpec("USDJPY", "ドル円", "USD/JPY", "円", ("JPY=X", "USDJPY=X"), 2),
     InstrumentSpec("DXY", "ドルインデックス", "US Dollar Index", "pt", ("DX-Y.NYB", "DX=F"), 2),
-    InstrumentSpec("US10Y", "米10年国債利回り", "US 10Y Treasury Yield", "%", ("^TNX",), 3, 10.0),
+    # ^TNX is quoted as yield×10 on Yahoo's live ticker page, but the
+    # historical Close values returned by history() are already the plain
+    # percentage — no scaling needed here.
+    InstrumentSpec("US10Y", "米10年国債利回り", "US 10Y Treasury Yield", "%", ("^TNX",), 3),
     InstrumentSpec("WTI", "WTI原油", "WTI Crude Oil", "USD/bbl", ("CL=F",), 2),
     InstrumentSpec("SPX", "S&P500", "S&P 500", "pt", ("^GSPC",), 1),
 ]
