@@ -1,5 +1,4 @@
-"""Instrument definitions and live-price fetching via Yahoo Finance (yfinance)
-and Stooq (for precious-metals spot prices, which Yahoo doesn't carry).
+"""Instrument definitions and live-price fetching via Yahoo Finance (yfinance).
 
 Yahoo Finance has no official public API; `yfinance` works against Yahoo's
 internal endpoints and can occasionally change shape or rate-limit. Every
@@ -7,26 +6,22 @@ call here is defensive: on failure we fall back to the last good cached
 value instead of raising, so a transient hiccup doesn't take the whole
 dashboard down.
 
-Yahoo has no true spot ticker for gold/silver (`XAUUSD=X`/`XAU=X` don't
-exist — confirmed via 404 from Yahoo's own API) — only COMEX futures
-(`GC=F`/`SI=F`), which trade at a small premium to spot (contango). For
-those two instruments we pull the live quote from Stooq's free, keyless
-`xauusd`/`xagusd` symbols instead, and rebase the Yahoo-futures-derived
-chart onto that real spot level so the live price and the chart agree.
+Gold/silver are COMEX futures (`GC=F`/`SI=F`), not spot. Yahoo has no true
+spot ticker for either (`XAUUSD=X`/`XAU=X` don't exist — confirmed via 404
+from Yahoo's own API), and the free, keyless spot sources we tried
+(Stooq, goldprice.org) both block plain HTTP requests (bot-challenge / 403).
+Futures trade close to spot but at a small premium (contango), so expect a
+gap of roughly 1% versus a retail broker's spot quote.
 """
 from __future__ import annotations
 
-import csv
-import io
 import time
 from dataclasses import dataclass
 
-import requests
 import yfinance as yf
 
 QUOTE_TTL_SECONDS = 10
 HISTORY_TTL_SECONDS = 300
-STOOQ_REQUEST_TIMEOUT = 10
 
 
 @dataclass
@@ -41,15 +36,11 @@ class InstrumentSpec:
     # Yahoo quotes some series (e.g. ^TNX) scaled by this factor vs. the
     # real-world value; divide by it to get the displayed value.
     scale_divisor: float = 1.0
-    # Stooq symbol for the true spot price (gold/silver only). When set,
-    # this is the authoritative source for the live quote; Yahoo tickers
-    # remain the source for chart shape (see history()'s rebasing).
-    stooq_symbol: str | None = None
 
 
 INSTRUMENTS: list[InstrumentSpec] = [
-    InstrumentSpec("XAUUSD", "金 (スポット)", "Gold Spot", "USD/oz", ("GC=F",), 2, stooq_symbol="xauusd"),
-    InstrumentSpec("XAGUSD", "銀 (スポット)", "Silver Spot", "USD/oz", ("SI=F",), 3, stooq_symbol="xagusd"),
+    InstrumentSpec("XAUUSD", "金 (先物)", "Gold Futures", "USD/oz", ("GC=F",), 2),
+    InstrumentSpec("XAGUSD", "銀 (先物)", "Silver Futures", "USD/oz", ("SI=F",), 3),
     InstrumentSpec("GOLDJPYG", "国内金価格", "Domestic Gold (JPY/g)", "円/g", (), 0),
     InstrumentSpec("USDJPY", "ドル円", "USD/JPY", "円", ("JPY=X", "USDJPY=X"), 2),
     InstrumentSpec("DXY", "ドルインデックス", "US Dollar Index", "pt", ("DX-Y.NYB", "DX=F"), 2),
@@ -76,29 +67,7 @@ class MarketDataError(RuntimeError):
     """Raised when live data can't be fetched and no cached fallback exists."""
 
 
-def _fetch_stooq_quote(stooq_symbol: str) -> dict:
-    url = f"https://stooq.com/q/d/l/?s={stooq_symbol}&i=d"
-    resp = requests.get(url, timeout=STOOQ_REQUEST_TIMEOUT, headers={"User-Agent": "Mozilla/5.0"})
-    resp.raise_for_status()
-    rows = [
-        row
-        for row in csv.DictReader(io.StringIO(resp.text))
-        if row.get("Close") not in (None, "", "N/D")
-    ]
-    if not rows:
-        raise MarketDataError(f"stooq:{stooq_symbol}: no data")
-    price = float(rows[-1]["Close"])
-    prev_close = float(rows[-2]["Close"]) if len(rows) >= 2 else price
-    return {"price": price, "prev_close": prev_close}
-
-
 def _fetch_raw_quote(spec: InstrumentSpec) -> dict:
-    if spec.stooq_symbol:
-        try:
-            return _fetch_stooq_quote(spec.stooq_symbol)
-        except Exception:  # noqa: BLE001 - fall through to Yahoo futures below
-            pass
-
     # `fast_info` silently returns None for some tickers/environments, so we
     # derive the quote from daily history instead — the same reliable code
     # path `history()` below already uses. The last row is "today so far"
@@ -243,18 +212,6 @@ def history(symbol: str, rng_key: str) -> list[dict]:
         if cached:
             return cached[1]
         raise
-
-    if spec.stooq_symbol and points:
-        # The chart is built from Yahoo futures data (good intraday
-        # granularity); shift it by a constant offset so its last point
-        # lines up with the real spot quote, keeping the live price and
-        # the chart visually consistent.
-        try:
-            spot_price = get_quote(symbol)["price"]
-            offset = spot_price - points[-1]["v"]
-            points = [{"t": p["t"], "v": round(p["v"] + offset, spec.decimals)} for p in points]
-        except Exception:  # noqa: BLE001 - rebasing is best-effort
-            pass
 
     _history_cache[cache_key] = (now, points)
     return points
