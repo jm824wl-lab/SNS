@@ -56,15 +56,20 @@ class MarketDataError(RuntimeError):
 
 
 def _fetch_raw_quote(spec: InstrumentSpec) -> dict:
+    # `fast_info` silently returns None for some tickers/environments, so we
+    # derive the quote from daily history instead — the same reliable code
+    # path `history()` below already uses. The last row is "today so far"
+    # (or the latest completed session), the row before it is prior close.
     last_error: Exception | None = None
     for ticker in spec.yahoo_tickers:
         try:
-            info = yf.Ticker(ticker).fast_info
-            price = info.get("last_price")
-            prev_close = info.get("previous_close")
-            if price is None or prev_close is None:
+            df = yf.Ticker(ticker).history(period="1mo", interval="1d")
+            closes = df["Close"].dropna()
+            if len(closes) == 0:
                 raise MarketDataError(f"{ticker}: no price data")
-            return {"price": float(price) / spec.scale_divisor, "prev_close": float(prev_close) / spec.scale_divisor}
+            price = float(closes.iloc[-1])
+            prev_close = float(closes.iloc[-2]) if len(closes) >= 2 else price
+            return {"price": price / spec.scale_divisor, "prev_close": prev_close / spec.scale_divisor}
         except Exception as e:  # noqa: BLE001 - Yahoo failures vary widely
             last_error = e
             continue
