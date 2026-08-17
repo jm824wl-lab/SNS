@@ -32,7 +32,7 @@ class InstrumentSpec:
 
 
 INSTRUMENTS: list[InstrumentSpec] = [
-    InstrumentSpec("XAUUSD", "金 (スポット)", "Gold Spot", "USD/oz", ("XAUUSD=X", "GC=F"), 2),
+    InstrumentSpec("XAUUSD", "金 (先物)", "Gold Futures", "USD/oz", ("GC=F",), 2),
     InstrumentSpec("XAGUSD", "銀 (スポット)", "Silver Spot", "USD/oz", ("XAGUSD=X", "SI=F"), 3),
     InstrumentSpec("GOLDJPYG", "国内金価格", "Domestic Gold (JPY/g)", "円/g", (), 0),
     InstrumentSpec("USDJPY", "ドル円", "USD/JPY", "円", ("JPY=X", "USDJPY=X"), 2),
