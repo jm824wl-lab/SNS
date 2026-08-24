@@ -21,7 +21,7 @@ _LISTING_HEADING = re.compile(r"^[\s　]*[【\[]([^】\]]{2,80})[】\]]\s*$", re
 
 # ノイズメール(セミナー案内・交流会案内・休業連絡など)を除外するための
 # 「物件情報らしさ」判定に使うキーワード
-_PRICE_PATTERN = re.compile(r"(?:[\d,]+\s*万円|[\d,]{4,}\s*円)")
+_PRICE_PATTERN = re.compile(r"(?:[\d,]+\s*億円?|[\d,]+\s*万円|[\d,]{4,}\s*円)")
 _SPEC_KEYWORDS = ("所在地", "物件", "駅", "坪", "㎡", "m2", "m²", "間取り", "利回り", "築")
 
 
@@ -102,7 +102,8 @@ def extract_property(raw_text: str) -> dict:
     text = _strip_bullets(raw_text.replace("　", " "))
 
     transaction_type = None
-    if re.search(r"賃貸|募集賃料|賃料", text):
+    # 「賃貸中」は入居状況を表すだけで取引種別ではないため除外する
+    if re.search(r"賃貸(?!中)|募集賃料|賃料[:：]", text):
         transaction_type = "賃貸"
     if re.search(r"売買|販売価格|売主|買取", text):
         transaction_type = "売買"
@@ -159,13 +160,14 @@ def extract_property(raw_text: str) -> dict:
     units = _search(r"(全\s*\d+\s*戸)", text)
     yield_label = _search(r"(?:満室想定)?利回り[:：]?\s*(?:約)?\s*([\d.]+\s*[%％])", text)
 
-    price_raw = None
-    if transaction_type == "売買":
-        price_raw = _search(r"(?:価格|販売価格)[:：]\s*(.+)", text)
-    else:
-        price_raw = _search(r"(?:賃料|募集賃料)[:：]\s*(.+)", text)
+    # 「価格」ラベルは売買、「賃料」ラベルは賃貸を意味するため、実際にどちらの
+    # ラベルにマッチしたかで/月表記を判断する(transaction_typeは「賃貸中」等の
+    # 入居状況の記述にも反応してしまうため、価格表記の判断には使わない)
+    price_raw = _search(r"(?:価格|販売価格)[:：]\s*(.+)", text)
+    is_rent_price = False
     if not price_raw:
-        price_raw = _search(r"(?:価格|賃料)[:：]\s*(.+)", text)
+        price_raw = _search(r"(?:賃料|募集賃料)[:：]\s*(.+)", text)
+        is_rent_price = price_raw is not None
     if price_raw:
         # 同じ行に「価格：○○万円 利回り：△％」のように後続情報が
         # 続くケースがあるため、価格以外の情報が始まる位置で切り詰める
@@ -173,7 +175,7 @@ def extract_property(raw_text: str) -> dict:
 
     price_yen = _to_int_yen(price_raw)
     price_label = price_raw.strip() if price_raw else None
-    if price_label and transaction_type == "賃貸" and "円" in price_label and "/" not in price_label and "月" not in price_label:
+    if price_label and is_rent_price and "円" in price_label and "/" not in price_label and "月" not in price_label:
         price_label = f"{price_label}/月"
 
     agent_name = _search(r"担当[:：]\s*(.+)", text)
