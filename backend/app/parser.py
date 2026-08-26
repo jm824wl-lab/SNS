@@ -19,6 +19,11 @@ _BULLET_PREFIX = re.compile(r"^[\s　]*[■◆●○・\-\*]+[\s　]*")
 # 検出するためのパターン(業者メールで頻出する形式)
 _LISTING_HEADING = re.compile(r"^[\s　]*[【\[]([^】\]]{2,80})[】\]]\s*$", re.MULTILINE)
 
+# 「【No.1】千代田区○○ 一棟収益ビル【売主直】（秋葉原駅4分）」のように、
+# 見出し行が【No.N】で始まり、直後に他の括弧書きを含む説明が続くケース
+# (リアテクス社のメールで頻出)。行末までを丸ごとタイトル候補として扱う。
+_NUMBERED_HEADING_LINE = re.compile(r"^[\s　]*[【\[]\s*No\.?\s*\d+\s*[】\]](.*)$", re.MULTILINE)
+
 # ノイズメール(セミナー案内・交流会案内・休業連絡など)を除外するための
 # 「物件情報らしさ」判定に使うキーワード
 _PRICE_PATTERN = re.compile(r"(?:[\d,]+\s*億円?|[\d,]+\s*万円|[\d,]{4,}\s*円)")
@@ -73,6 +78,10 @@ def split_listings(raw_text: str) -> list[str]:
     """
     matches = list(_LISTING_HEADING.finditer(raw_text))
     if len(matches) < 2:
+        numbered_matches = list(_NUMBERED_HEADING_LINE.finditer(raw_text))
+        if len(numbered_matches) >= 2:
+            matches = numbered_matches
+    if len(matches) < 2:
         return [raw_text]
 
     chunks = []
@@ -114,6 +123,12 @@ def extract_property(raw_text: str) -> dict:
         heading_match = _LISTING_HEADING.search(raw_text)
         if heading_match:
             title = heading_match.group(1).strip()
+    if not title:
+        # 「【No.1】千代田区○○ 一棟収益ビル（秋葉原駅4分）」のような
+        # 連番見出し行から、No.N部分を除いた説明部分をタイトルにする
+        numbered_match = _NUMBERED_HEADING_LINE.search(raw_text)
+        if numbered_match and numbered_match.group(1).strip():
+            title = numbered_match.group(1).strip()
     if not title:
         # 「■ グランデール北柏」のような見出し行(元テキストで■始まり)を探す
         for line in raw_text.splitlines():
