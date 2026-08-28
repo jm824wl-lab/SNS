@@ -167,9 +167,11 @@ def ingest_gmail_batch(payload: schemas.GmailIngestRequest, db: Session = Depend
     本文を物件ごとに分割し、それぞれについて物件情報らしいと判定できたものだけを
     (Gmailメッセージ内の連番付きIDで重複排除しつつ)登録する。
     """
+    # 件名は複数物件に共通のヘッダーとしてチャンク先頭に付与すると、件名に含まれる
+    # 数値(価格・利回り等)が他の物件のものとして誤抽出されることがあるため、
+    # バッチ取込では差出人のみをヘッダーに含める(件名はチャンク単位ではなく
+    # メール全体の内容のため、個々の物件のフィールド抽出に混ざるべきではない)。
     header_lines = []
-    if payload.subject:
-        header_lines.append(f"件名: {payload.subject}")
     if payload.sender:
         header_lines.append(f"差出人: {payload.sender}")
     header = "\n".join(header_lines) + ("\n\n" if header_lines else "")
