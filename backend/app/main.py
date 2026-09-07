@@ -7,6 +7,7 @@ from sqlalchemy import or_
 from sqlalchemy.orm import Session
 
 from . import models, schemas
+from .backup import export_backup, restore_backup
 from .database import Base, SessionLocal, engine, get_db
 from .ingest import ingest_raw_text
 from .parser import is_property_listing, split_listings
@@ -30,6 +31,12 @@ def seed_if_empty() -> None:
     db = SessionLocal()
     try:
         if db.query(models.Property).count() > 0:
+            return
+
+        # コンテナ再起動でSQLiteファイルが失われた場合、gitで管理された
+        # バックアップJSONから実データを復元する。バックアップが存在すれば
+        # モックのサンプルデータでの初期化は行わない。
+        if restore_backup(db):
             return
 
         for filename in sorted(os.listdir(SEED_DIR)):
@@ -210,3 +217,15 @@ def ingest_gmail_batch(payload: schemas.GmailIngestRequest, db: Session = Depend
             detail="物件情報として認識できませんでした(ノイズメールの可能性があります)。force=trueで強制取込できます。",
         )
     return results
+
+
+@app.post("/api/backup/export")
+def backup_export(db: Session = Depends(get_db)):
+    """全物件データをgit管理下のJSONファイルへ書き出す。
+
+    コンテナ再起動でSQLiteのローカルディスクが失われることがあるため、
+    日次同期の最後にこれを呼び、生成されたファイルをコミット・プッシュ
+    しておくことで次回起動時に復元できるようにする。
+    """
+    count = export_backup(db)
+    return {"exported": count}
