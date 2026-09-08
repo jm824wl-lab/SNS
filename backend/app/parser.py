@@ -114,7 +114,10 @@ def extract_property(raw_text: str) -> dict:
     # 「賃貸中」は入居状況を表すだけで取引種別ではないため除外する
     if re.search(r"賃貸(?!中)|募集賃料|賃料[:：]", text):
         transaction_type = "賃貸"
-    if re.search(r"売買|販売価格|売主|買取", text):
+    # 「想定賃料」は収益物件の指標として売買物件にも頻出するため、賃貸の
+    # 判定だけでは誤検出しやすい。「価格」ラベル(買主が支払う金額)が
+    # あればそれ自体が売買の強い signal になるため、売買判定に含める
+    if re.search(r"売買|販売価格|売主|買取|売却|価格[:：]", text):
         transaction_type = "売買"
 
     title = _search(r"物件名[:：]\s*(.+)", text)
@@ -147,9 +150,11 @@ def extract_property(raw_text: str) -> dict:
                 property_type = keyword
                 break
 
-    address = _search(r"所在地[:：]\s*(.+)", text)
+    # 「所在地：」の他に、業者によっては「所 在：」のように1文字ずつ空白で
+    # 区切ったラベル表記もあるため、文字間の空白を許容する
+    address = _search(r"所\s*在\s*(?:地)?[:：]\s*(.+)", text)
 
-    access = _search(r"(?:最寄駅|交通)[:：]\s*(.+)", text)
+    access = _search(r"(?:最寄駅|交\s*通)[:：]\s*(.+)", text)
     if not access:
         station_match = re.search(r"[「『]([^「」『』]{2,12})[」』]?\s*駅\s*徒歩\s*(\d+)\s*分", text)
         if station_match:
@@ -164,15 +169,25 @@ def extract_property(raw_text: str) -> dict:
     area_raw = _search(r"(?:専有面積|面積)[:：]\s*([\d.]+)\s*(?:㎡|m2|m²)", text)
     area_sqm = float(area_raw) if area_raw else None
 
-    land_tsubo = _search(r"土地[:：]?\s*([\d.]+)\s*坪", text)
-    building_tsubo = _search(r"建物[:：]?\s*([\d.]+)\s*坪", text)
+    # 「土地：29.39坪」だけでなく「土 地：公募97.18㎡（約29.39坪)」のように
+    # ㎡表記が先に来て坪数が括弧書きで続くケースもあるため、同じ行内であれば
+    # ラベルと坪数の間に他の文字列があっても許容する
+    land_tsubo = _search(r"土\s*地[:：]?[^\n]*?([\d.]+)\s*坪", text)
+    building_tsubo = _search(r"建\s*物[:：]?[^\n]*?([\d.]+)\s*坪", text)
 
     built_year = _search(r"築年数[:：]\s*(.+)", text)
     if not built_year:
+        built_year = _search(r"築\s*年[:：]\s*(.+)", text)
+    if not built_year:
         built_year = _search(r"(築\s*\d+\s*年)", text)
+    if not built_year:
+        # 「1987年11月築」のように竣工年月が先で「築」が後に付くケース
+        built_year = _search(r"(\d{4}年\d{1,2}月)\s*築", text)
 
-    structure = _search(r"((?:RC|SRC|S|木)造[^\n、。]*)", text)
+    structure = _search(r"((?:RC|SRC|S|木|鉄筋コンクリート|鉄骨)造[^\n、。]*)", text)
     units = _search(r"(全\s*\d+\s*戸)", text)
+    if not units:
+        units = _search(r"(総戸数\s*\d+\s*戸)", text)
     yield_label = _search(r"(?:満室想定)?利回り[:：]?\s*(?:約)?\s*([\d.]+\s*[%％])", text)
 
     # 「価格」ラベルは売買、「賃料」ラベルは賃貸を意味するため、実際にどちらの
