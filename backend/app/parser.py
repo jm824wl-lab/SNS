@@ -117,7 +117,7 @@ def extract_property(raw_text: str) -> dict:
     # 「想定賃料」は収益物件の指標として売買物件にも頻出するため、賃貸の
     # 判定だけでは誤検出しやすい。「価格」ラベル(買主が支払う金額)が
     # あればそれ自体が売買の強い signal になるため、売買判定に含める
-    if re.search(r"売買|販売価格|売主|買取|売却|価格[:：]", text):
+    if re.search(r"売買|販売価格|売主|買取|売却|価\s*格[:：]", text):
         transaction_type = "売買"
 
     title = _search(r"物件名[:：]\s*(.+)", text)
@@ -183,17 +183,20 @@ def extract_property(raw_text: str) -> dict:
     if not built_year:
         # 「1987年11月築」のように竣工年月が先で「築」が後に付くケース
         built_year = _search(r"(\d{4}年\d{1,2}月)\s*築", text)
+    if not built_year:
+        # 新築物件では「築年」ではなく「竣工」ラベルが使われる
+        built_year = _search(r"竣\s*工[:：]\s*(.+)", text)
 
     structure = _search(r"((?:RC|SRC|S|木|鉄筋コンクリート|鉄骨)造[^\n、。]*)", text)
     units = _search(r"(全\s*\d+\s*戸)", text)
     if not units:
-        units = _search(r"(総戸数\s*\d+\s*戸)", text)
+        units = _search(r"(総戸数[:：]?\s*\d+\s*戸)", text)
     yield_label = _search(r"(?:満室想定)?利回り[:：]?\s*(?:約)?\s*([\d.]+\s*[%％])", text)
 
     # 「価格」ラベルは売買、「賃料」ラベルは賃貸を意味するため、実際にどちらの
     # ラベルにマッチしたかで/月表記を判断する(transaction_typeは「賃貸中」等の
     # 入居状況の記述にも反応してしまうため、価格表記の判断には使わない)
-    price_raw = _search(r"(?:価格|販売価格)[:：]\s*(.+)", text)
+    price_raw = _search(r"(?:価\s*格|販売価格)[:：]\s*(.+)", text)
     is_rent_price = False
     if not price_raw:
         price_raw = _search(r"(?:賃料|募集賃料)[:：]\s*(.+)", text)
