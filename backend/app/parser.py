@@ -120,7 +120,7 @@ def extract_property(raw_text: str) -> dict:
     if re.search(r"売買|販売価格|売主|買取|売却|価\s*格[:：]", text):
         transaction_type = "売買"
 
-    title = _search(r"物件名[:：]\s*(.+)", text)
+    title = _search(r"物\s*件\s*名[:：]\s*(.+)", text)
     if not title:
         # 「【エフネスト西所沢】」のような括弧見出し行を最優先で探す
         heading_match = _LISTING_HEADING.search(raw_text)
@@ -164,10 +164,12 @@ def extract_property(raw_text: str) -> dict:
             if station_match:
                 access = f"{station_match.group(1)} 徒歩{station_match.group(2)}分"
 
-    layout = _search(r"間取り[:：]\s*(.+)", text)
+    # 「間取り：3LDK、専有面積 : 68.79 ㎡）」のように同じ括弧内に他の情報が
+    # 続くケースがあるため、区切り文字より前のトークンだけを間取りとして扱う
+    layout = _search(r"間取り[:：]\s*([^\s　、,，)）]+)", text)
 
-    area_raw = _search(r"(?:専有面積|面積)[:：]\s*([\d.]+)\s*(?:㎡|m2|m²)", text)
-    area_sqm = float(area_raw) if area_raw else None
+    area_raw = _search(r"(?:専有面積|面積)\s*[:：]\s*([\d,.]+)\s*(?:㎡|m2|m²)", text)
+    area_sqm = float(area_raw.replace(",", "")) if area_raw else None
 
     # 「土地：29.39坪」だけでなく「土 地：公募97.18㎡（約29.39坪)」のように
     # ㎡表記が先に来て坪数が括弧書きで続くケースもあるため、同じ行内であれば
@@ -190,8 +192,15 @@ def extract_property(raw_text: str) -> dict:
     structure = _search(r"((?:RC|SRC|S|木|鉄筋コンクリート|鉄骨)造[^\n、。]*)", text)
     units = _search(r"(全\s*\d+\s*戸)", text)
     if not units:
-        units = _search(r"(総戸数[:：]?\s*\d+\s*戸)", text)
-    yield_label = _search(r"(?:満室想定)?利回り[:：]?\s*(?:約)?\s*([\d.]+\s*[%％])", text)
+        units = _search(r"(総\s*戸\s*数[:：]?\s*\d+\s*戸)", text)
+    # 「表面利回り：\n・満室想定 15.11%」のように、ラベルと数値の間に
+    # 改行や「・満室想定」等の箇条書きが挟まるケースがあるため許容する。
+    # ただし「利回りも8.51%→10.31%へアップ」のような紹介文中の言及(旧値)を
+    # 誤って拾わないよう、スキップ対象は空白・記号・既知のラベル語のみに限定する
+    yield_label = _search(
+        r"(?:満室想定)?利回り[:：]?[\s　・･]*(?:満室想定|現況)?[\s　]*(?:約)?[\s　]*([\d.]+\s*[%％])",
+        text,
+    )
 
     # 「価格」ラベルは売買、「賃料」ラベルは賃貸を意味するため、実際にどちらの
     # ラベルにマッチしたかで/月表記を判断する(transaction_typeは「賃貸中」等の
@@ -201,6 +210,18 @@ def extract_property(raw_text: str) -> dict:
     if not price_raw:
         price_raw = _search(r"(?:賃料|募集賃料)[:：]\s*(.+)", text)
         is_rent_price = price_raw is not None
+    if not price_raw:
+        # 「価格5,680万円」「価格 3億9,800万円」のようにコロンなしで
+        # ラベルの直後に金額が続くケース(グローバルベイス・ムゲンエステート等)。
+        # 「価格5億未満の希少性」のような紹介文中の言及を誤って拾わないよう、
+        # 「円」を必須にする(実際の金額表記は必ず円で終わるため)
+        price_raw = _search(
+            r"価\s*格\s*((?:[\d,]+\s*億\s*)?[\d,]+\s*万円|[\d,]+\s*億円|[\d,]{4,}\s*円)", text
+        )
+    if not price_raw:
+        # 土地・建物・消費税の内訳のみで「価格」ラベルがなく、「合計」欄に
+        # 総額が示されるケース(自社開発物件の販売資料等)
+        price_raw = _search(r"合\s*計[:：]\s*(.+)", text)
     if price_raw:
         # 同じ行に「価格：○○万円 利回り：△％」のように後続情報が
         # 続くケースがあるため、価格以外の情報が始まる位置で切り詰める
@@ -210,6 +231,11 @@ def extract_property(raw_text: str) -> dict:
     price_label = price_raw.strip() if price_raw else None
     if price_label and is_rent_price and "円" in price_label and "/" not in price_label and "月" not in price_label:
         price_label = f"{price_label}/月"
+
+    # ここまでのラベル検出で取引種別が判断できなかった場合、実際に
+    # マッチした価格ラベルの種類(価格=売買 / 賃料=賃貸)から推定する
+    if transaction_type is None and price_raw:
+        transaction_type = "賃貸" if is_rent_price else "売買"
 
     agent_name = _search(r"担当[:：]\s*(.+)", text)
     if not agent_name:
