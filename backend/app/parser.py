@@ -153,6 +153,10 @@ def extract_property(raw_text: str) -> dict:
     # 「所在地：」の他に、業者によっては「所 在：」のように1文字ずつ空白で
     # 区切ったラベル表記もあるため、文字間の空白を許容する
     address = _search(r"所\s*在\s*(?:地)?[:：]\s*(.+)", text)
+    if address:
+        # 「東京都渋谷区代々木5-28-3交通：小田急小田原線...」のように、
+        # 改行なしで次のラベルが続くケースがあるため、そこで切り詰める
+        address = re.split(r"交\s*通[:：]", address)[0].strip()
 
     access = _search(r"(?:最寄駅|交\s*通)[:：]\s*(.+)", text)
     if not access:
@@ -166,7 +170,7 @@ def extract_property(raw_text: str) -> dict:
 
     # 「間取り：3LDK、専有面積 : 68.79 ㎡）」のように同じ括弧内に他の情報が
     # 続くケースがあるため、区切り文字より前のトークンだけを間取りとして扱う
-    layout = _search(r"間取り[:：]\s*([^\s　、,，)）]+)", text)
+    layout = _search(r"間取り\s*[:：]\s*([^\s　、,，)）]+)", text)
 
     area_raw = _search(r"(?:専有面積|面積)\s*[:：]\s*([\d,.]+)\s*(?:㎡|m2|m²)", text)
     area_sqm = float(area_raw.replace(",", "")) if area_raw else None
