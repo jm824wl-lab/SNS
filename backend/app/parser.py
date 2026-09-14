@@ -190,6 +190,9 @@ def extract_property(raw_text: str) -> dict:
         # 「1987年11月築」のように竣工年月が先で「築」が後に付くケース
         built_year = _search(r"(\d{4}年\d{1,2}月)\s*築", text)
     if not built_year:
+        # 「昭和63年築」のように和暦表記で「築」が後に付くケース
+        built_year = _search(r"((?:昭和|平成|令和)\d{1,2}年(?:\d{1,2}月)?)\s*築", text)
+    if not built_year:
         # 新築物件では「築年」ではなく「竣工」ラベルが使われる
         built_year = _search(r"竣\s*工[:：]\s*(.+)", text)
 
