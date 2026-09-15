@@ -158,7 +158,7 @@ def extract_property(raw_text: str) -> dict:
         # 改行なしで次のラベルが続くケースがあるため、そこで切り詰める
         address = re.split(r"交\s*通[:：]", address)[0].strip()
 
-    access = _search(r"(?:最寄駅|交\s*通)[:：]\s*(.+)", text)
+    access = _search(r"(?:最寄駅|交\s*通|アクセス)[:：]\s*(.+)", text)
     if not access:
         station_match = re.search(r"[「『]([^「」『』]{2,12})[」』]?\s*駅\s*徒歩\s*(\d+)\s*分", text)
         if station_match:
