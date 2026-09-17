@@ -27,7 +27,7 @@ _NUMBERED_HEADING_LINE = re.compile(r"^[\s　]*[【\[]\s*No\.?\s*\d+\s*[】\]](.
 # ノイズメール(セミナー案内・交流会案内・休業連絡など)を除外するための
 # 「物件情報らしさ」判定に使うキーワード
 _PRICE_PATTERN = re.compile(r"(?:[\d,]+\s*億円?|[\d,]+\s*万円|[\d,]{4,}\s*円)")
-_SPEC_KEYWORDS = ("所在地", "物件", "駅", "坪", "㎡", "m2", "m²", "間取り", "利回り", "築")
+_SPEC_KEYWORDS = ("所在地", "物件", "駅", "坪", "㎡", "m2", "m²", "平米", "間取り", "利回り", "築")
 
 
 def _strip_bullets(text: str) -> str:
@@ -112,12 +112,12 @@ def extract_property(raw_text: str) -> dict:
 
     transaction_type = None
     # 「賃貸中」は入居状況を表すだけで取引種別ではないため除外する
-    if re.search(r"賃貸(?!中)|募集賃料|賃料[:：]", text):
+    if re.search(r"賃貸(?!中)|募集賃料|賃料\s*[:：]", text):
         transaction_type = "賃貸"
     # 「想定賃料」は収益物件の指標として売買物件にも頻出するため、賃貸の
     # 判定だけでは誤検出しやすい。「価格」ラベル(買主が支払う金額)が
     # あればそれ自体が売買の強い signal になるため、売買判定に含める
-    if re.search(r"売買|販売価格|売主|買取|売却|価\s*格[:：]", text):
+    if re.search(r"売買|販売価格|売主|買取|売却|価\s*格\s*[:：]", text):
         transaction_type = "売買"
 
     title = _search(r"物\s*件\s*名[:：]\s*(.+)", text)
@@ -153,6 +153,10 @@ def extract_property(raw_text: str) -> dict:
     # 「所在地：」の他に、業者によっては「所 在：」のように1文字ずつ空白で
     # 区切ったラベル表記もあるため、文字間の空白を許容する
     address = _search(r"所\s*在\s*(?:地)?[:：]\s*(.+)", text)
+    if not address:
+        # 「所在　東京都豊島区長崎3-3-16」のようにコロンなしで空白のみで
+        # ラベルと値が区切られているケース
+        address = _search(r"所\s*在\s*(?:地)?\s+(\S.+)", text)
     if address:
         # 「東京都渋谷区代々木5-28-3交通：小田急小田原線...」のように、
         # 改行なしで次のラベルが続くケースがあるため、そこで切り詰める
@@ -183,7 +187,20 @@ def extract_property(raw_text: str) -> dict:
 
     built_year = _search(r"築年数[:：]\s*(.+)", text)
     if not built_year:
-        built_year = _search(r"築\s*年[:：]\s*(.+)", text)
+        # 「構造・築年：RC造、2026年6月竣工」のように、築年ラベルの値に
+        # 構造など他の情報が一緒に入っているケースがあるため、値の中から
+        # 年を表す部分だけを取り出す
+        built_year_raw = _search(r"築\s*年[:：]\s*(.+)", text)
+        if built_year_raw and "造" in built_year_raw:
+            # 値の先頭に構造名が混ざっている場合だけ、年を表す部分を
+            # 取り出す(通常の「1990年3月築」等はそのまま活かす)
+            year_match = re.search(
+                r"(?:昭和|平成|令和)\d{1,2}年(?:\d{1,2}月)?|\d{4}年\d{1,2}月|\d{4}年",
+                built_year_raw,
+            )
+            built_year = year_match.group(0) if year_match else built_year_raw
+        else:
+            built_year = built_year_raw
     if not built_year:
         built_year = _search(r"(築\s*\d+\s*年)", text)
     if not built_year:
@@ -212,10 +229,10 @@ def extract_property(raw_text: str) -> dict:
     # 「価格」ラベルは売買、「賃料」ラベルは賃貸を意味するため、実際にどちらの
     # ラベルにマッチしたかで/月表記を判断する(transaction_typeは「賃貸中」等の
     # 入居状況の記述にも反応してしまうため、価格表記の判断には使わない)
-    price_raw = _search(r"(?:価\s*格|販売価格)[:：]\s*(.+)", text)
+    price_raw = _search(r"(?:価\s*格|販売価格)\s*[:：]\s*(.+)", text)
     is_rent_price = False
     if not price_raw:
-        price_raw = _search(r"(?:賃料|募集賃料)[:：]\s*(.+)", text)
+        price_raw = _search(r"(?:賃料|募集賃料)\s*[:：]\s*(.+)", text)
         is_rent_price = price_raw is not None
     if not price_raw:
         # 「価格5,680万円」「価格 3億9,800万円」のようにコロンなしで
