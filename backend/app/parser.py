@@ -213,7 +213,12 @@ def extract_property(raw_text: str) -> dict:
         # 新築物件では「築年」ではなく「竣工」ラベルが使われる
         built_year = _search(r"竣\s*工[:：]\s*(.+)", text)
 
-    structure = _search(r"((?:RC|SRC|S|木|鉄筋コンクリート|鉄骨)造[^\n、。]*)", text)
+    # ラベル付きの「構造：」を優先し、なければ本文中の「○○造」表記を探す
+    # (紹介文の冒頭に「新築木造アパートが販売開始しました」のような、
+    # ラベルのない言及があると誤って拾ってしまうため)
+    structure = _search(r"構造\s*[:：]\s*((?:RC|SRC|S|木|鉄筋コンクリート|鉄骨)造[^\n、。]*)", text)
+    if not structure:
+        structure = _search(r"((?:RC|SRC|S|木|鉄筋コンクリート|鉄骨)造[^\n、。]*)", text)
     units = _search(r"(全\s*\d+\s*戸)", text)
     if not units:
         units = _search(r"(総\s*戸\s*数[:：]?\s*\d+\s*戸)", text)
