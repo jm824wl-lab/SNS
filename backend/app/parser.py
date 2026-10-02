@@ -24,6 +24,10 @@ _LISTING_HEADING = re.compile(r"^[\s　]*[【\[]([^】\]]{2,80})[】\]]\s*$", re
 # (リアテクス社のメールで頻出)。行末までを丸ごとタイトル候補として扱う。
 _NUMBERED_HEADING_LINE = re.compile(r"^[\s　]*[【\[]\s*No\.?\s*\d+\s*[】\]](.*)$", re.MULTILINE)
 
+# 「■物件①」「■物件②」のように、丸数字で連番付けされた見出し行
+# (TonTon社のメールで頻出。【】を使わないため上記とは別パターンで検出)
+_CIRCLED_PROPERTY_HEADING = re.compile(r"^[\s　]*■\s*物件\s*[①-⑳0-9]+\s*$", re.MULTILINE)
+
 # ノイズメール(セミナー案内・交流会案内・休業連絡など)を除外するための
 # 「物件情報らしさ」判定に使うキーワード
 _PRICE_PATTERN = re.compile(r"(?:[\d,]+\s*億円?|[\d,]+\s*万円|[\d,]{4,}\s*円)")
@@ -81,6 +85,10 @@ def split_listings(raw_text: str) -> list[str]:
         numbered_matches = list(_NUMBERED_HEADING_LINE.finditer(raw_text))
         if len(numbered_matches) >= 2:
             matches = numbered_matches
+    if len(matches) < 2:
+        circled_matches = list(_CIRCLED_PROPERTY_HEADING.finditer(raw_text))
+        if len(circled_matches) >= 2:
+            matches = circled_matches
     if len(matches) < 2:
         return [raw_text]
 
