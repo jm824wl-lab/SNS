@@ -125,7 +125,7 @@ def extract_property(raw_text: str) -> dict:
     # 「想定賃料」は収益物件の指標として売買物件にも頻出するため、賃貸の
     # 判定だけでは誤検出しやすい。「価格」ラベル(買主が支払う金額)が
     # あればそれ自体が売買の強い signal になるため、売買判定に含める
-    if re.search(r"売買|販売価格|売主|買取|売却|価\s*格\s*[:：]", text):
+    if re.search(r"売買|販売価格|売主|買取|売却|価\s*格\s*[:：]|金\s*額\s*[:：]", text):
         transaction_type = "売買"
 
     title = _search(r"物\s*件\s*名[:：]\s*(.+)", text)
@@ -242,7 +242,8 @@ def extract_property(raw_text: str) -> dict:
     # 「価格」ラベルは売買、「賃料」ラベルは賃貸を意味するため、実際にどちらの
     # ラベルにマッチしたかで/月表記を判断する(transaction_typeは「賃貸中」等の
     # 入居状況の記述にも反応してしまうため、価格表記の判断には使わない)
-    price_raw = _search(r"(?:価\s*格|販売価格)\s*[:：]\s*(.+)", text)
+    # 「金額」は軽井沢の別荘等、一部業者が「価格」の代わりに使うラベル表記
+    price_raw = _search(r"(?:価\s*格|販売価格|金\s*額)\s*[:：]\s*(.+)", text)
     is_rent_price = False
     if not price_raw:
         price_raw = _search(r"(?:賃料|募集賃料)\s*[:：]\s*(.+)", text)
