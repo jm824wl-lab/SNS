@@ -13258,5 +13258,31 @@
     "gmail_thread_id": "1a18a6e5b56f6d08",
     "received_at": "2026-10-30T01:30:42",
     "created_at": "2026-10-30T23:15:45.379270"
+  },
+  {
+    "title": "フローレンス学芸大",
+    "transaction_type": "売買",
+    "property_type": "一棟",
+    "status": "募集中",
+    "price_label": "3億6,000万円（税込）",
+    "price_yen": 360000000,
+    "address": "東京都目黒区鷹番1丁目14-20",
+    "access": "東急東横線「学芸大学」駅 徒歩3分",
+    "layout": null,
+    "area_sqm": 165.42,
+    "built_year": null,
+    "agent_name": null,
+    "land_tsubo_label": "50坪",
+    "building_tsubo_label": null,
+    "structure": "RC造陸屋根4階建",
+    "units": "総戸数：10戸",
+    "yield_label": "3.46％",
+    "source_type": "gmail",
+    "source_filename": null,
+    "raw_text": "差出人: harada@beyondltd.co.jp\n\n件名: 【決済前案件／弊社売主】目黒区鷹番1丁目・3.6億円／学芸大学駅徒歩3分・土地50坪・一棟RC\n差出人: harada@beyondltd.co.jp\n\n【フローレンス学芸大】\n物件名：フローレンス学芸大\n所在地：東京都目黒区鷹番1丁目14-20\n交通：東急東横線「学芸大学」駅 徒歩3分\n土地面積：165.42㎡（50.03坪）\n延床面積：341.18㎡（103.20坪）\n構造：RC造陸屋根4階建\n築年月：2001年6月\n総戸数：10戸（8戸賃貸中・2戸空室）\n価格：3億6,000万円（税込）\n満室利回り：約3.46％\n備考：EV・検査済証あり。簡易積算価格は約2億1,556万円（売買価格比約60％）。",
+    "gmail_message_id": "1a18f97fde3453c4",
+    "gmail_thread_id": "1a18f97fde3453c4",
+    "received_at": "2026-10-31T01:34:21",
+    "created_at": "2026-10-31T23:15:57.371586"
   }
 ]
