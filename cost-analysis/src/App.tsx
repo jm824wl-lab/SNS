@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AccountsView } from './components/AccountsView';
 import { DrilldownView } from './components/DrilldownView';
 import { ImportPanel, type TableConfig, type TableStat } from './components/ImportPanel';
@@ -55,9 +55,15 @@ export default function App() {
         stats.push({ entries: 0, skipped: 0, warnings: [] });
         continue;
       }
-      const r = parseTable(cfg.table, cfg.headerRow, cfg.mapping, dateOpts, entries.length);
-      entries.push(...r.entries);
-      stats.push({ entries: r.entries.length, skipped: r.skippedRows, warnings: r.warnings });
+      try {
+        const r = parseTable(cfg.table, cfg.headerRow, cfg.mapping, dateOpts, entries.length);
+        // 数十万行の元帳でも落ちないよう、スプレッド構文(引数数に上限あり)ではなくループで追加する
+        for (const e of r.entries) entries.push(e);
+        stats.push({ entries: r.entries.length, skipped: r.skippedRows, warnings: r.warnings });
+      } catch (e) {
+        const msg = e instanceof Error ? e.message : String(e);
+        stats.push({ entries: 0, skipped: 0, warnings: [`「${cfg.table.name}」を解析できませんでした(${msg})。列の割り当てを確認してください。`] });
+      }
     }
     return { entries, stats };
   }, [configs, dateOpts]);
@@ -103,6 +109,26 @@ export default function App() {
     if (errors.length) setError(errors.join('\n'));
     if (tables.length) addTables(tables);
   };
+
+  // ページのどこにドロップしても取り込む(枠外へのドロップでブラウザがファイルを開いて画面が消えるのを防ぐ)
+  const onFilesRef = useRef(onFiles);
+  useEffect(() => {
+    onFilesRef.current = onFiles;
+  });
+  useEffect(() => {
+    const over = (e: DragEvent) => e.preventDefault();
+    const drop = (e: DragEvent) => {
+      e.preventDefault();
+      const files = [...(e.dataTransfer?.files ?? [])];
+      if (files.length) void onFilesRef.current(files);
+    };
+    window.addEventListener('dragover', over);
+    window.addEventListener('drop', drop);
+    return () => {
+      window.removeEventListener('dragover', over);
+      window.removeEventListener('drop', drop);
+    };
+  }, []);
 
   const selectAccount = (a: string) => {
     setAccount(a);

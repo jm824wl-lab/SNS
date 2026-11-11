@@ -66,11 +66,7 @@ export function ImportPanel(props: Props) {
           setDrag(true);
         }}
         onDragLeave={() => setDrag(false)}
-        onDrop={(e) => {
-          e.preventDefault();
-          setDrag(false);
-          props.onFiles([...e.dataTransfer.files]);
-        }}
+        onDrop={() => setDrag(false)} // ファイルの受け取りはページ全体のドロップ処理(App)で行う
       >
         <strong>{loading ? '読み込み中…' : 'ここにファイルをドロップ、またはクリックして選択'}</strong>
         <span className="muted">
