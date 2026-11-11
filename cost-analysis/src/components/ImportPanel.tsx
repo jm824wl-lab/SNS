@@ -95,7 +95,7 @@ export function ImportPanel(props: Props) {
         )}
         <span className="spacer" />
         <label className="muted row">
-          年が省略された日付の期首:
+          年が省略された日付の期首(帳票内に「7年」等の表記があればそちらを優先):
           <input
             type="number"
             style={{ width: 80 }}
@@ -153,7 +153,9 @@ function TableConfigView({
   const journal = isJournalMapping(cfg.mapping);
   const header = cfg.headerRow >= 0 ? cfg.table.rows[cfg.headerRow] : [];
   const colCount = Math.max(header.length, ...cfg.table.rows.slice(0, 50).map((r) => r.length));
-  const colName = (i: number) => (header[i] ? `${header[i]}` : `列${i + 1}`);
+  // 見出しが2段の帳票(2段目に「月 日」など)では2段目の文字も列名に使う
+  const subHeader = cfg.headerRow >= 0 ? (cfg.table.rows[cfg.headerRow + 1] ?? []) : [];
+  const colName = (i: number) => header[i]?.trim() || (cfg.mapping.date === i && subHeader[i]?.trim()) || `列${i + 1}`;
   const fields = journal ? JOURNAL_FIELDS : LEDGER_FIELDS;
   const preview = cfg.table.rows.slice(cfg.headerRow + 1, cfg.headerRow + 6);
 

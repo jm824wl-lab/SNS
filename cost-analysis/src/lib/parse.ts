@@ -16,7 +16,7 @@ const HEADER_RULES: [FieldKey, RegExp][] = [
   ['credit', /^貸方(金額)?$/],
   ['amount', /^(取引)?金額$|^税込金額$/],
   ['account', /^(勘定)?科目(名)?$|^勘定科目名称$/],
-  ['date', /^(取引|伝票|計上|発生|仕訳)?日付$|^取引日$|^年月日$|^発生日$|^計上日$/],
+  ['date', /^(取引|伝票|計上|発生|仕訳)?日付$|^取引日$|^年?月日$|^月\/日$|^発生日$|^計上日$/],
   ['partner', /^(取引先|得意先|仕入先|相手先)(名)?$/],
   ['department', /^部門(名)?$/],
   ['description', /^(摘要|内容|備考|品目|メモ)$/],
@@ -91,6 +91,23 @@ function headerScore(row: string[]): number {
   return Object.keys(autoMapping(row)).length;
 }
 
+/**
+ * 見出し行の列割り当て。見出しが2段(例: 1段目に「摘要」「借方金額」、2段目に「月 日」)の場合は、
+ * 1段目で埋まらなかった列を2段目の見出しで補う。
+ */
+export function detectMapping(rows: string[][], headerRow: number): ColumnMapping {
+  if (headerRow < 0) return {};
+  const mapping = autoMapping(rows[headerRow]);
+  const next = rows[headerRow + 1];
+  if (next && !next.some((c) => parseAmount(c) !== null && !/^\d{1,2}[/.月]/.test(c.trim()))) {
+    const used = new Set(Object.values(mapping));
+    for (const [key, col] of Object.entries(autoMapping(next)) as [FieldKey, number][]) {
+      if (mapping[key] === undefined && !used.has(col)) mapping[key] = col;
+    }
+  }
+  return mapping;
+}
+
 /** 先頭30行から見出し行らしい行を探す。見つからなければ -1 */
 export function detectHeaderRow(rows: string[][]): number {
   let best = -1;
@@ -147,7 +164,8 @@ function validYmd(y: number, m: number, d: number): string | null {
 /** 日付文字列を YYYY-MM-DD に正規化(西暦・和暦・Excelシリアル値・年省略に対応) */
 export function parseDate(raw: string | undefined, opts: DateOptions): string | null {
   if (!raw) return null;
-  const s = raw.normalize('NFKC').trim();
+  // 「4/ 1」「2025 / 4 / 1」のような桁揃えの空白を除去
+  const s = raw.normalize('NFKC').replace(/\s+/g, '');
   if (!s) return null;
 
   let m = s.match(/^(\d{4})[/\-.年](\d{1,2})[/\-.月](\d{1,2})日?/);
@@ -182,22 +200,46 @@ export function parseDate(raw: string | undefined, opts: DateOptions): string | 
   return null;
 }
 
-/** 繰越・合計などの集計行は明細ではないので除外する */
-const SUMMARY_ROW = /^(前期|前月|前年|次期|次月|翌期|翌月)?繰越|^(月|合|累|小|総|期間|総合)計|^合\s*計|^残高$|^\*+$/;
+/**
+ * 帳票内の年の表記(「7年」「令和7年」「2025年度」)を西暦に変換する。年の表記でなければ null。
+ * 元号の無い2桁以下の年は令和とみなす。
+ */
+export function parseYearLabel(raw: string): number | null {
+  const s = raw.normalize('NFKC').replace(/\s+/g, '');
+  let m = s.match(/^(\d{4})年度?$/);
+  if (m) return +m[1];
+  m = s.match(/^(令和|平成|R|H)?(\d{1,2}|元)年度?$/i);
+  if (!m) return null;
+  const n = m[2] === '元' ? 1 : +m[2];
+  return (/^(平成|H)$/i.test(m[1] ?? '') ? 1988 : 2018) + n;
+}
+
+/**
+ * 繰越・合計などの集計行は明細ではないので除外する。
+ * 「※※ 4月計 ※※」「前期より繰越」「翌期への繰越」「決算月計」などの表記ゆれに対応するため、
+ * 記号と空白を除いた短いセル全体で判定する。
+ */
+function isSummaryCell(raw: string): boolean {
+  const s = raw.normalize('NFKC').replace(/[\s※*＊【】[\]<>()]/g, '');
+  if (!s || s.length > 14) return false;
+  return /^.{0,8}(繰越|繰り越し)(高|額)?$/.test(s) || /^.{0,8}(月計|合計|累計|小計|総計|期間計|日計)$/.test(s) || /^(残高|差引残高)$/.test(s);
+}
 
 /** 「【7100】旅費交通費」「勘定科目: 旅費交通費」などから科目名を取り出す */
 export function cleanAccountName(raw: string): string {
   return raw
     .normalize('NFKC')
-    .replace(/^勘定科目(名)?[:：\s]*/, '')
-    .replace(/^[[【(]?\s*\d{2,6}\s*[\]】)]?\s*[:：\-\s]*/, '')
+    // 「旅 費 交通費」のような桁揃えの空白を除去(勘定科目名には通常空白を含まない)
+    .replace(/\s+/g, '')
+    .replace(/^(勘定)?科目(名)?[:：]*/, '')
+    .replace(/^[[【(]?\d{2,6}[\]】)]?[:：-]*/, '')
     .replace(/^[[【(]\s*(.+?)\s*[\]】)]$/, '$1')
     .replace(/[:：]\s*$/, '')
     .trim();
 }
 
 /** 元帳の科目見出し行として扱わない文言(帳票タイトル・会社名・期間など) */
-const NOT_ACCOUNT_TITLE = /総勘定元帳|仕訳帳|補助元帳|株式会社|有限会社|合同会社|\(株\)|期間|自\s*\d|至\s*\d|\d+年\d+月|ページ|page|作成日|出力日|単位/i;
+const NOT_ACCOUNT_TITLE = /元帳|仕訳帳|補助元帳|株式会社|有限会社|合同会社|\(株\)|期間|自\s*\d|至\s*\d|\d+年\d+月|ページ|page|作成日|出力日|単位/i;
 
 export interface ParseResult {
   entries: Entry[];
@@ -235,55 +277,89 @@ export function parseTable(
     ? [mapping.debitAmount, mapping.creditAmount]
     : [mapping.debit, mapping.credit, mapping.amount];
 
-  // 科目列が無い元帳: 見出し行より前にある科目名候補を探す
+  const amountColSet = new Set(amountCols.filter((c): c is number => c !== undefined));
+  const hasAmountIn = (row: string[]) => [...amountColSet].some((c) => parseAmount(row[c]) !== null);
+  const compact = (c: string) => c.normalize('NFKC').replace(/\s+/g, '');
+
+  // 科目列が無い元帳: 科目ブロックの見出しから科目名を取る
   let sectionAccount = '';
   const useSections = !journal && mapping.account === undefined;
+
+  /** 「科目」ラベルの右にある科目名(例: 会社名 | ○○ | 科目 | 101 | 現金)。コード番号は読み飛ばす */
+  const labeledAccount = (row: string[]): string | null => {
+    const idx = row.findIndex((c) => /^(勘定)?科目(名)?[:：]?$/.test(compact(c)));
+    if (idx < 0) return null;
+    for (let j = idx + 1; j < row.length; j++) {
+      const v = compact(row[j]);
+      if (!v || /^\d+$/.test(v)) continue;
+      const name = cleanAccountName(row[j]);
+      return name && Object.keys(autoMapping([row[j]])).length === 0 ? name : null;
+    }
+    return null;
+  };
+  /** ラベルの無い科目見出し行(例:「【7100】旅費交通費」) */
   const sectionCandidate = (row: string[]): string | null => {
     const texts = row.filter((c) => c.trim() !== '');
     if (texts.length === 0 || texts.length > 3) return null;
-    if (amountCols.some((c) => c !== undefined && parseAmount(row[c]) !== null)) return null;
-    const joined = texts.join(' ');
-    if (NOT_ACCOUNT_TITLE.test(joined)) return null;
+    if (hasAmountIn(row)) return null;
+    if (NOT_ACCOUNT_TITLE.test(compact(texts.join('')))) return null;
+    if (Object.keys(autoMapping(row)).length > 0) return null; // 「月 日」など見出しの段
+    if (texts.some((t) => parseYearLabel(t) !== null)) return null;
     // 「勘定科目」「旅費交通費」が別セルの場合
-    const label = texts.length >= 2 && /^勘定科目(名)?[:：]?$/.test(texts[0]) ? texts[1] : texts[0];
+    const label = texts.length >= 2 && /^勘定科目(名)?[:：]?$/.test(compact(texts[0])) ? texts[1] : texts[0];
     const name = cleanAccountName(label);
     return name && !/^\d+$/.test(name) && name.length <= 30 ? name : null;
   };
 
-  if (useSections) {
-    for (let i = 0; i < Math.max(headerRow, 0); i++) {
-      const c = sectionCandidate(table.rows[i]);
-      if (c) sectionAccount = c;
+  // 帳票内の年表記(「7年」など)。年が省略された日付の補完に使う
+  let labeledYear: number | null = null;
+  // 同じ日の2行目以降は日付が省略されることが多いため、直前の日付を引き継ぐ
+  let lastDate: string | null = null;
+
+  /** 金額の無い行から、科目ブロックの区切り・年表記を読み取る。読み取れたら true */
+  const readContextRow = (row: string[]): boolean => {
+    const texts = row.filter((c) => c.trim() !== '');
+    if (texts.length > 0 && texts.length <= 2) {
+      const y = texts.map(parseYearLabel).find((v) => v !== null);
+      if (y != null) {
+        labeledYear = y;
+        return true;
+      }
     }
-  }
+    if (!useSections) return false;
+    const c = labeledAccount(row) ?? sectionCandidate(row);
+    if (c) {
+      sectionAccount = c;
+      lastDate = null;
+      return true;
+    }
+    return false;
+  };
+
+  for (let i = 0; i < Math.max(headerRow, 0); i++) readContextRow(table.rows[i]);
 
   for (let i = headerRow + 1; i < table.rows.length; i++) {
     const row = table.rows[i];
     if (row.every((c) => c.trim() === '')) continue;
     if (row.join('\u0001') === headerKey) continue; // ページごとに繰り返される見出し
 
+    const opts = labeledYear !== null ? { ...dateOpts, fiscalStartYear: labeledYear } : dateOpts;
     const dateRaw = get(row, 'date');
+    const rowDate = parseDate(dateRaw, opts);
+    if (rowDate) lastDate = rowDate;
+
+    if (row.some((c, idx) => !amountColSet.has(idx) && isSummaryCell(c))) {
+      skippedRows++;
+      continue;
+    }
+
+    if (!hasAmountIn(row)) {
+      if (!readContextRow(row)) skippedRows++;
+      continue;
+    }
+
     const desc = get(row, 'description');
-    const firstText = row.find((c) => c.trim() !== '') ?? '';
-    if ([dateRaw, desc, firstText].some((t) => SUMMARY_ROW.test(t.normalize('NFKC').trim()))) {
-      skippedRows++;
-      continue;
-    }
-
-    const hasAmount = amountCols.some((c) => c !== undefined && parseAmount(row[c]) !== null);
-    if (!hasAmount) {
-      if (useSections) {
-        const c = sectionCandidate(row);
-        if (c) {
-          sectionAccount = c;
-          continue;
-        }
-      }
-      skippedRows++;
-      continue;
-    }
-
-    const date = parseDate(dateRaw, dateOpts);
+    const date = dateRaw ? rowDate : mapping.date !== undefined ? lastDate : null;
     if (!date) undatedRows++;
     const base = {
       date,

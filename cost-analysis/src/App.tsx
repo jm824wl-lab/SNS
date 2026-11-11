@@ -9,7 +9,7 @@ import { applyFilters, fillMonths, monthsOf, plSummary, summarizeAccounts, type 
 import { loadOverrides, saveOverrides, type ClassOverrides } from './lib/classify';
 import { monthLabel } from './lib/format';
 import { loadFile } from './lib/load';
-import { autoMapping, detectHeaderRow, parseTable, type DateOptions } from './lib/parse';
+import { detectHeaderRow, detectMapping, parseTable, type DateOptions } from './lib/parse';
 import { sampleLedger } from './lib/sample';
 import type { Entry, RawTable } from './lib/types';
 
@@ -24,7 +24,7 @@ const TABS: { key: Tab; label: string }[] = [
 
 function configFor(table: RawTable): TableConfig {
   const headerRow = detectHeaderRow(table.rows);
-  return { table, headerRow, mapping: headerRow >= 0 ? autoMapping(table.rows[headerRow]) : {}, enabled: true };
+  return { table, headerRow, mapping: detectMapping(table.rows, headerRow), enabled: true };
 }
 
 function defaultDateOpts(): DateOptions {
@@ -161,7 +161,7 @@ export default function App() {
               if (j !== i) return c;
               // 見出し行を変えた場合は列割り当てを再判定する
               if (cfg.headerRow !== c.headerRow) {
-                return { ...cfg, mapping: cfg.headerRow >= 0 ? autoMapping(cfg.table.rows[cfg.headerRow]) : {} };
+                return { ...cfg, mapping: detectMapping(cfg.table.rows, cfg.headerRow) };
               }
               return cfg;
             }),

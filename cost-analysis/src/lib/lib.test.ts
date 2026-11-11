@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { decodeBytes, parseDelimited, toCsv } from './csv';
-import { autoMapping, cleanAccountName, detectHeaderRow, isJournalMapping, parseAmount, parseDate, parseTable } from './parse';
+import { autoMapping, cleanAccountName, detectHeaderRow, detectMapping, isJournalMapping, parseAmount, parseDate, parseTable } from './parse';
 import { guessClass } from './classify';
 import { applyFilters, fillMonths, plSummary, summarizeAccounts, trendOf, monthsOf, breakdown } from './aggregate';
 import { sampleLedger } from './sample';
@@ -180,5 +180,61 @@ describe('集計(サンプル元帳を通しで処理)', () => {
   });
   it('欠落月を補完する', () => {
     expect(fillMonths(['2025-11', '2026-02'])).toEqual(['2025-11', '2025-12', '2026-01', '2026-02']);
+  });
+});
+
+describe('科目ごとにブロックが分かれた元帳(会社名・科目が同じ行、「月 日」が2段目、年が別行)', () => {
+  const tax = ['', '', '', '', '', '税区分', '税込', '税抜', '課税', '非課税', '不課税'];
+  const header = ['', '', '（相手科目名）', '', '摘 要', '借 方 金 額', '貸 方 金 額', '差 引 残 高'];
+  const block = (code: string, name: string, lines: string[][]) => [
+    ['', '', '', '元 帳'],
+    tax,
+    [],
+    ['会社名', '株式会社 テスト', '', '科 目', code, name, '', '', '', '', 'No.', '1'],
+    ['', '7年'],
+    header,
+    ['', '月 日'],
+    ...lines,
+    [],
+  ];
+  const rows = [
+    ...block('101', '現 金', [
+      ['', '4/ 1', '', '前期より繰越', '', '', '', '2,484,997'],
+      ['', '', '預 り 金', '64514', '振替', '', '14,668', '2,470,329'],
+      ['', '', '', '※※ 4月計 ※※', '', '0', '14,668', '2,470,329'],
+      [],
+      ['', '3/31', '買 掛 金', '64513', 'H29.6.30 伝票No690', '', '506,722', ''],
+      ['', '', '未 収 入 金', '64515', '振替', '', '127,536', '1,836,071'],
+      ['', '', '', '※※ 決算月計 ※※', '', '0', '634,258', '1,836,071'],
+      ['', '', '', '翌期への繰越', '', '0', '648,926', '1,836,071'],
+    ]),
+    ...block('102', '小 口 現 金', [
+      ['', '4/ 1', '', '前期より繰越', '', '', '', '694,015'],
+      ['', '4/ 2', '売 掛 金', '1035', 'daibiki アロマ', '10,340', '', '704,355'],
+      ['', '4/ 4', '旅 費 交通費', '515', '2025年3月分_経費', '', '190', ''],
+      ['', '', '雑 費', '551', '2025年3月分_経費', '', '700', ''],
+    ]),
+  ];
+  // 画面の期首年が誤っていても、帳票内の「7年」(令和7年)を優先する
+  const wrongOpts = { fiscalStartYear: 2030, fiscalStartMonth: 4 };
+  const t = { name: '元帳.xlsx', rows };
+  const h = detectHeaderRow(rows);
+  const mapping = detectMapping(rows, h);
+
+  it('2段目の「月 日」を日付列として割り当てる', () => {
+    expect(mapping).toMatchObject({ date: 1, counterAccount: 2, description: 4, debit: 5, credit: 6 });
+  });
+
+  it('科目ブロック・日付の省略・月計/繰越行・文字間スペースを正しく扱う', () => {
+    const r = parseTable(t, h, mapping, wrongOpts);
+    expect(r.entries.map((e) => [e.account, e.date, e.counterAccount, e.debit, e.credit])).toEqual([
+      ['現金', '2025-04-01', '預り金', 0, 14668],
+      ['現金', '2026-03-31', '買掛金', 0, 506722],
+      ['現金', '2026-03-31', '未収入金', 0, 127536],
+      ['小口現金', '2025-04-02', '売掛金', 10340, 0],
+      ['小口現金', '2025-04-04', '旅費交通費', 0, 190],
+      ['小口現金', '2025-04-04', '雑費', 0, 700],
+    ]);
+    expect(r.undatedRows).toBe(0);
   });
 });
