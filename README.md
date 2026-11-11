@@ -8,6 +8,8 @@
 
 - `backend/` — FastAPI + SQLite。メール本文/PDFテキストから物件情報を抽出するルールベースの
   パーサー(`app/parser.py`)と、一覧・検索・詳細・取込のAPIを提供します。
+- `cost-analysis/` — 総勘定元帳・仕訳帳を取り込み、勘定科目別の集計・月次推移・固定費/変動費・損益分岐点を
+  分析するコスト分析アプリ(ブラウザ内完結)。詳細は [cost-analysis/README.md](cost-analysis/README.md)。
 - `frontend/` — React + Vite + TypeScript。物件一覧・検索・詳細ページと、メール本文貼り付け/PDF
   アップロードで自動リスト化を試せる取込デモページを提供します。
 
