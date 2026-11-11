@@ -38,7 +38,13 @@ export function useThemeColors(): ThemeColors {
     const mq = window.matchMedia('(prefers-color-scheme: dark)');
     const update = () => setColors(read());
     mq.addEventListener('change', update);
-    return () => mq.removeEventListener('change', update);
+    // 表示側のテーマ切替(data-theme 属性)にも追従する
+    const mo = new MutationObserver(update);
+    mo.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme', 'class'] });
+    return () => {
+      mq.removeEventListener('change', update);
+      mo.disconnect();
+    };
   }, []);
   return colors;
 }

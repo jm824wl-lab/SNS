@@ -1,7 +1,8 @@
 import { useMemo, useState } from 'react';
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { breakdown, signedAmount, type AccountSummary, type Dimension } from '../lib/aggregate';
-import { downloadCsv } from '../lib/download';
+import { exportTable } from '../lib/download';
+import { ExportButton } from './ExportButton';
 import { man, monthLabel, pct, yen } from '../lib/format';
 import type { Entry } from '../lib/types';
 import { YenTooltip } from './charts';
@@ -64,7 +65,7 @@ export function DrilldownView({ account, accounts, entries, months, onSelectAcco
   const partTotal = parts.reduce((t, p) => t + p.amount, 0);
 
   const exportCsv = () =>
-    downloadCsv(`明細_${summary.account}.csv`, [
+    exportTable(`明細_${summary.account}.csv`, [
       ['日付', '勘定科目', '相手勘定科目', '取引先', '部門', '摘要', '借方金額', '貸方金額', '取込元'],
       ...lines.map((e) => [e.date ?? '', e.account, e.counterAccount, e.partner, e.department, e.description, e.debit, e.credit, e.source]),
     ]);
@@ -142,9 +143,7 @@ export function DrilldownView({ account, accounts, entries, months, onSelectAcco
                 setPage(0);
               }}
             />
-            <button className="btn" onClick={exportCsv}>
-              CSV出力
-            </button>
+            <ExportButton onExport={exportCsv} />
           </div>
           <div className="table-wrap" style={{ maxHeight: 420 }}>
             <table>

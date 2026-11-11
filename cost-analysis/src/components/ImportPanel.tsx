@@ -7,6 +7,8 @@ export interface TableConfig {
   headerRow: number;
   mapping: ColumnMapping;
   enabled: boolean;
+  /** デモ用サンプル(自社データの取込時に置き換える) */
+  isSample?: boolean;
 }
 
 export interface TableStat {
@@ -121,6 +123,12 @@ export function ImportPanel(props: Props) {
         🔒 ファイルはこのブラウザ内だけで処理され、サーバーへは送信されません。科目の分類設定のみブラウザに保存されます。
       </p>
       {error && <div className="notice error">{error}</div>}
+      {configs.some((c) => c.isSample) && (
+        <div className="notice sample">
+          <strong>サンプルデータを表示中</strong>:架空の卸売業の1年分(2025年4月〜2026年3月)の総勘定元帳です。
+          自社の元帳ファイルを取り込むと、サンプルは自動で置き換わります。
+        </div>
+      )}
 
       {configs.map((cfg, i) => (
         <TableConfigView

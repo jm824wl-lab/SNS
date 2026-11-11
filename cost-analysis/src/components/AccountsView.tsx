@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { trendOf, type AccountSummary, type PlSummary } from '../lib/aggregate';
-import { downloadCsv } from '../lib/download';
+import { exportTable } from '../lib/download';
+import { ExportButton } from './ExportButton';
 import { delta, monthLabel, pct, yen } from '../lib/format';
 import { CATEGORIES, COST_CATEGORIES } from '../lib/types';
 
@@ -78,7 +79,7 @@ export function AccountsView({ accounts, months, pl, onSelectAccount }: Props) {
   );
 
   const exportCsv = () => {
-    downloadCsv('勘定科目別集計.csv', [
+    return exportTable('勘定科目別集計.csv', [
       ['勘定科目', '損益区分', '固変区分', '期間合計', '借方合計', '貸方合計', '費用構成比', '売上高比', '月平均', `最新月(${lastMonth ?? ''})`, '前月比', '平均比', '件数'],
       ...rows.map(({ a, t, share, salesRatio }) => [
         a.account,
@@ -111,9 +112,7 @@ export function AccountsView({ accounts, months, pl, onSelectAccount }: Props) {
           <option value="all">すべての科目(貸借対照表を含む)</option>
         </select>
         <input type="search" placeholder="科目名で検索" value={query} onChange={(e) => setQuery(e.target.value)} />
-        <button className="btn" onClick={exportCsv}>
-          CSV出力
-        </button>
+        <ExportButton onExport={exportCsv} />
       </div>
       <div className="table-wrap">
         <table>

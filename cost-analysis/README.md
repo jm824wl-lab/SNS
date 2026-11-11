@@ -43,9 +43,13 @@ npm install
 npm run dev      # http://localhost:5173
 npm test         # 解析・分類・集計ロジックのテスト(vitest)
 npm run build    # dist/ に静的ファイルを出力(任意の静的ホスティングで公開可能)
+npm run build:artifact  # JS・CSSを埋め込んだ1ファイル版 dist-artifact/cost-analysis.html を出力
 ```
 
-「サンプルデータで試す」ボタンで、架空の卸売業1年分(2025年4月〜2026年3月)の総勘定元帳を読み込めます。
+1ファイル版は claude.ai の Artifact として公開しています(CSV保存は Artifact の downloads 機能を使用)。
+表の「コピー / CSV出力」ボタンは、Excel に貼り付けられる形式でクリップボードにコピーし、CSVファイルの保存も行います。
+
+初回表示時と「サンプルデータで試す」ボタンで、架空の卸売業1年分(2025年4月〜2026年3月)の総勘定元帳を読み込めます。自社データを取り込むとサンプルは置き換わります。
 
 ### 構成
 

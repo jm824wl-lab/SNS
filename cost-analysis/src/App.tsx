@@ -34,7 +34,8 @@ function defaultDateOpts(): DateOptions {
 }
 
 export default function App() {
-  const [configs, setConfigs] = useState<TableConfig[]>([]);
+  // 初回は使い方が分かるようサンプルを表示し、自社データの取込時に置き換える
+  const [configs, setConfigs] = useState<TableConfig[]>(() => [{ ...configFor(sampleLedger()), isSample: true }]);
   const [dateOpts, setDateOpts] = useState<DateOptions>(defaultDateOpts);
   const [overrides, setOverrides] = useState<ClassOverrides>(loadOverrides);
   const [filters, setFilters] = useState<Filters>({ fromMonth: null, toMonth: null, department: null });
@@ -75,8 +76,12 @@ export default function App() {
   const accounts = useMemo(() => summarizeAccounts(filtered, overrides), [filtered, overrides]);
   const pl = useMemo(() => plSummary(accounts), [accounts]);
 
-  const addTables = useCallback((tables: RawTable[]) => {
-    setConfigs((prev) => [...prev, ...tables.map(configFor)]);
+  const addTables = useCallback((tables: RawTable[], isSample = false) => {
+    setConfigs((prev) => [
+      ...prev.filter((c) => !c.isSample),
+      ...tables.map((t) => ({ ...configFor(t), isSample })),
+    ]);
+    setAccount(null);
     setFilters({ fromMonth: null, toMonth: null, department: null });
     setDataVersion((v) => v + 1);
   }, []);
@@ -123,7 +128,7 @@ export default function App() {
         error={error}
         loading={loading}
         onFiles={onFiles}
-        onSample={() => addTables([sampleLedger()])}
+        onSample={() => addTables([sampleLedger()], true)}
         onChange={(i, cfg) =>
           setConfigs((prev) =>
             prev.map((c, j) => {

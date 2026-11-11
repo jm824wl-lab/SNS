@@ -1,7 +1,8 @@
 import { useMemo, useState } from 'react';
 import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import type { AccountSummary } from '../lib/aggregate';
-import { downloadCsv } from '../lib/download';
+import { exportTable } from '../lib/download';
+import { ExportButton } from './ExportButton';
 import { man, monthLabel, yen } from '../lib/format';
 import { CATEGORIES, COST_CATEGORIES, type Category } from '../lib/types';
 import { Legend, YenTooltip } from './charts';
@@ -78,7 +79,7 @@ export function MonthlyView({ accounts, months, onSelectAccount }: Props) {
       rows.push([g.cat, `${g.cat} 計`, ...months.map((m) => Math.round(g.subtotal[m])), Math.round(g.total)]);
     }
     rows.push(['', '費用合計', ...months.map((m) => Math.round(costTotalByMonth(m))), Math.round(costTotal)]);
-    downloadCsv('月次推移表.csv', rows);
+    return exportTable('月次推移表.csv', rows);
   };
 
   return (
@@ -134,9 +135,7 @@ export function MonthlyView({ accounts, months, onSelectAccount }: Props) {
             <input type="checkbox" checked={includeRevenue} onChange={(e) => setIncludeRevenue(e.target.checked)} />
             売上を表示
           </label>
-          <button className="btn" onClick={exportCsv}>
-            CSV出力
-          </button>
+          <ExportButton onExport={exportCsv} />
         </div>
         <div className="table-wrap" style={{ maxHeight: 640 }}>
           <table>
