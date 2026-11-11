@@ -54,6 +54,7 @@ export type FieldKey =
   | 'debit'
   | 'credit'
   | 'amount'
+  | 'balance'
   | 'partner'
   | 'department'
   | 'description'

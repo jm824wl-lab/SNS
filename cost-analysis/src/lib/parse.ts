@@ -15,6 +15,7 @@ const HEADER_RULES: [FieldKey, RegExp][] = [
   ['debit', /^借方(金額)?$/],
   ['credit', /^貸方(金額)?$/],
   ['amount', /^(取引)?金額$|^税込金額$/],
+  ['balance', /^(差引)?残高$/],
   ['account', /^(勘定)?科目(名)?$|^勘定科目名称$/],
   ['date', /^(取引|伝票|計上|発生|仕訳)?日付$|^取引日$|^年?月日$|^月\/日$|^発生日$|^計上日$/],
   ['partner', /^(取引先|得意先|仕入先|相手先)(名)?$/],
@@ -29,6 +30,7 @@ export const FIELD_LABELS: Record<FieldKey, string> = {
   debit: '借方金額',
   credit: '貸方金額',
   amount: '金額(借方扱い)',
+  balance: '差引残高(検算用)',
   partner: '取引先',
   department: '部門',
   description: '摘要',
@@ -105,7 +107,38 @@ export function detectMapping(rows: string[][], headerRow: number): ColumnMappin
       if (mapping[key] === undefined && !used.has(col)) mapping[key] = col;
     }
   }
+  alignAmountColumns(rows, headerRow, mapping);
   return mapping;
+}
+
+/**
+ * 金額の見出しと数値の列のずれを補正する。
+ * Excel の帳票では「借 方 金 額」が結合セルの左端に入り、数値は右隣の列に入っていることがある。
+ * そのままだと借方の列で何も読めず、貸方の列で差引残高を読むといったずれが起きるため、
+ * 各見出しから次の見出しの手前までの範囲で、数値が最も多く入っている列を採用する。
+ */
+function alignAmountColumns(rows: string[][], headerRow: number, mapping: ColumnMapping): void {
+  if (isJournalMapping(mapping)) return;
+  const keys = (['debit', 'credit', 'amount', 'balance'] as const)
+    .filter((k) => mapping[k] !== undefined)
+    .sort((a, b) => mapping[a]! - mapping[b]!);
+  if (keys.length === 0) return;
+  const counts: number[] = [];
+  for (const r of rows.slice(headerRow + 1, headerRow + 3001)) {
+    r.forEach((c, i) => {
+      if (parseAmount(c) !== null) counts[i] = (counts[i] ?? 0) + 1;
+    });
+  }
+  const original = keys.map((k) => mapping[k]!);
+  let prev = -1;
+  keys.forEach((k, idx) => {
+    const start = Math.max(original[idx], prev + 1);
+    const end = idx + 1 < keys.length ? original[idx + 1] : original[idx] + 3;
+    let best = start;
+    for (let c = start; c < end; c++) if ((counts[c] ?? 0) > (counts[best] ?? 0)) best = c;
+    mapping[k] = best;
+    prev = best;
+  });
 }
 
 /** 先頭30行から見出し行らしい行を探す。見つからなければ -1 */
@@ -220,6 +253,8 @@ export function parseYearLabel(raw: string): number | null {
  * 記号と空白を除いた短いセル全体で判定する。
  */
 function isSummaryCell(raw: string): boolean {
+  // 「******」のように記号だけのセルは科目・月の合計行の印
+  if (/^[\s*＊※]{2,}$/.test(raw.normalize('NFKC')) && /[*＊※]{2,}/.test(raw.normalize('NFKC'))) return true;
   const s = raw.normalize('NFKC').replace(/[\s※*＊【】[\]<>()]/g, '');
   if (!s || s.length > 14) return false;
   return /^.{0,8}(繰越|繰り越し)(高|額)?$/.test(s) || /^.{0,8}(月計|合計|累計|小計|総計|期間計|日計)$/.test(s) || /^(残高|差引残高)$/.test(s);
@@ -246,6 +281,8 @@ export interface ParseResult {
   warnings: string[];
   skippedRows: number;
   undatedRows: number;
+  /** 差引残高による検算(差引残高の列がある元帳のみ) */
+  balanceCheck: { checked: number; matched: number } | null;
 }
 
 /**
@@ -316,6 +353,12 @@ export function parseTable(
   // 同じ日の2行目以降は日付が省略されることが多いため、直前の日付を引き継ぐ
   let lastDate: string | null = null;
 
+  // 差引残高による検算: 前の残高 ± (借方 − 貸方) が次の残高と一致するか
+  let prevBalance: number | null = null;
+  let pendingDelta = 0;
+  let balanceChecked = 0;
+  let balanceMatched = 0;
+
   /** 金額の無い行から、科目ブロックの区切り・年表記を読み取る。読み取れたら true */
   const readContextRow = (row: string[]): boolean => {
     const texts = row.filter((c) => c.trim() !== '');
@@ -331,6 +374,8 @@ export function parseTable(
     if (c) {
       sectionAccount = c;
       lastDate = null;
+      prevBalance = null;
+      pendingDelta = 0;
       return true;
     }
     return false;
@@ -348,7 +393,14 @@ export function parseTable(
     const rowDate = parseDate(dateRaw, opts);
     if (rowDate) lastDate = rowDate;
 
-    if (row.some((c, idx) => !amountColSet.has(idx) && isSummaryCell(c))) {
+    const balance = mapping.balance !== undefined ? parseAmount(get(row, 'balance')) : null;
+    const summaryCols = new Set([...amountColSet, ...(mapping.balance !== undefined ? [mapping.balance] : [])]);
+    if (row.some((c, idx) => !summaryCols.has(idx) && isSummaryCell(c))) {
+      // 繰越・月計行の残高は次の検算の起点にする
+      if (balance !== null) {
+        prevBalance = balance;
+        pendingDelta = 0;
+      }
       skippedRows++;
       continue;
     }
@@ -416,6 +468,18 @@ export function parseTable(
       skippedRows++;
       continue;
     }
+    pendingDelta += debit - credit;
+    if (balance !== null) {
+      if (prevBalance !== null) {
+        balanceChecked++;
+        // 借方残の科目は 前残高+借方−貸方、貸方残の科目は 前残高−借方+貸方
+        if (Math.abs(prevBalance + pendingDelta - balance) < 1 || Math.abs(prevBalance - pendingDelta - balance) < 1) {
+          balanceMatched++;
+        }
+      }
+      prevBalance = balance;
+      pendingDelta = 0;
+    }
     entries.push({
       ...base,
       id: nextId++,
@@ -435,5 +499,17 @@ export function parseTable(
   if (undatedRows > 0) {
     warnings.push(`「${table.name}」: 日付を解釈できない行が ${undatedRows} 行あります(合計には含め、月次推移からは除外)。`);
   }
-  return { entries, warnings, skippedRows, undatedRows };
+  if (balanceChecked >= 5 && balanceMatched / balanceChecked < 0.8) {
+    warnings.push(
+      `「${table.name}」: 借方・貸方の金額と差引残高が合わない行が ${balanceChecked - balanceMatched} / ${balanceChecked} 行あります。` +
+        '「列の割り当てを確認・変更」で借方金額・貸方金額・差引残高の列が正しいか確認してください。',
+    );
+  }
+  return {
+    entries,
+    warnings,
+    skippedRows,
+    undatedRows,
+    balanceCheck: balanceChecked > 0 ? { checked: balanceChecked, matched: balanceMatched } : null,
+  };
 }

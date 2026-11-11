@@ -59,7 +59,7 @@ export default function App() {
         const r = parseTable(cfg.table, cfg.headerRow, cfg.mapping, dateOpts, entries.length);
         // 数十万行の元帳でも落ちないよう、スプレッド構文(引数数に上限あり)ではなくループで追加する
         for (const e of r.entries) entries.push(e);
-        stats.push({ entries: r.entries.length, skipped: r.skippedRows, warnings: r.warnings });
+        stats.push({ entries: r.entries.length, skipped: r.skippedRows, warnings: r.warnings, balanceCheck: r.balanceCheck });
       } catch (e) {
         const msg = e instanceof Error ? e.message : String(e);
         stats.push({ entries: 0, skipped: 0, warnings: [`「${cfg.table.name}」を解析できませんでした(${msg})。列の割り当てを確認してください。`] });

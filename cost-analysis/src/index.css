@@ -399,6 +399,16 @@ tr.subtotal td.sticky {
   border: 1px solid var(--border);
 }
 
+.badge.ok {
+  border-color: var(--good);
+  color: var(--good);
+}
+
+.badge.ng {
+  border-color: var(--critical);
+  color: var(--critical);
+}
+
 .badge.variable {
   border-color: var(--series-2);
 }

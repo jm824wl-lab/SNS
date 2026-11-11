@@ -15,9 +15,10 @@ export interface TableStat {
   entries: number;
   skipped: number;
   warnings: string[];
+  balanceCheck?: { checked: number; matched: number } | null;
 }
 
-const LEDGER_FIELDS: FieldKey[] = ['date', 'account', 'counterAccount', 'debit', 'credit', 'amount', 'partner', 'department', 'description'];
+const LEDGER_FIELDS: FieldKey[] = ['date', 'account', 'counterAccount', 'debit', 'credit', 'amount', 'balance', 'partner', 'department', 'description'];
 const JOURNAL_FIELDS: FieldKey[] = [
   'date',
   'debitAccount',
@@ -155,7 +156,13 @@ function TableConfigView({
   const colCount = Math.max(header.length, ...cfg.table.rows.slice(0, 50).map((r) => r.length));
   // 見出しが2段の帳票(2段目に「月 日」など)では2段目の文字も列名に使う
   const subHeader = cfg.headerRow >= 0 ? (cfg.table.rows[cfg.headerRow + 1] ?? []) : [];
-  const colName = (i: number) => header[i]?.trim() || (cfg.mapping.date === i && subHeader[i]?.trim()) || `列${i + 1}`;
+  const colName = (i: number) => {
+    const own = header[i]?.trim() || (cfg.mapping.date === i && subHeader[i]?.trim());
+    if (own) return own;
+    // 見出しが結合セルで左隣にある場合に分かるよう、左隣の見出しを添える
+    const left = header[i - 1]?.replace(/[\s　]+/g, '');
+    return left ? `列${i + 1}(${left}の右)` : `列${i + 1}`;
+  };
   const fields = journal ? JOURNAL_FIELDS : LEDGER_FIELDS;
   const preview = cfg.table.rows.slice(cfg.headerRow + 1, cfg.headerRow + 6);
 
@@ -177,6 +184,14 @@ function TableConfigView({
         {stat && (
           <span className="muted">
             明細 {stat.entries.toLocaleString()} 件取込 / 集計行・空行など {stat.skipped.toLocaleString()} 行を除外
+          </span>
+        )}
+        {stat?.balanceCheck && (
+          <span
+            className={`badge ${stat.balanceCheck.matched === stat.balanceCheck.checked ? 'ok' : 'ng'}`}
+            title="直前の残高 ± (借方 − 貸方) が帳票の差引残高と一致した行数"
+          >
+            差引残高との検算 {stat.balanceCheck.matched.toLocaleString()} / {stat.balanceCheck.checked.toLocaleString()} 行一致
           </span>
         )}
         <span className="spacer" />
