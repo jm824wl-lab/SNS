@@ -1,18 +1,29 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { fetchProperty, type PropertyDetail as PropertyDetailType } from "../api";
+import {
+  fetchProperty,
+  fetchPropertyMatches,
+  type PropertyDetail as PropertyDetailType,
+  type PropertyMatchResponse,
+} from "../api";
+import MatchResults, { NormalizedSummary } from "../components/MatchResults";
 import { formatDate, formatYen, sourceLabel } from "../format";
 
 export default function PropertyDetail() {
   const { id } = useParams();
   const [property, setProperty] = useState<PropertyDetailType | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [matches, setMatches] = useState<PropertyMatchResponse | null>(null);
+  const [matchError, setMatchError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!id) return;
     fetchProperty(Number(id))
       .then(setProperty)
       .catch((err) => setError(err.message));
+    fetchPropertyMatches(Number(id))
+      .then(setMatches)
+      .catch((err) => setMatchError(err.message));
   }, [id]);
 
   if (error) return <p className="error">エラー: {error}</p>;
@@ -55,6 +66,19 @@ export default function PropertyDetail() {
           ))}
         </tbody>
       </table>
+
+      <section>
+        <h2>紹介先の会社</h2>
+        {matchError && <p className="error">エラー: {matchError}</p>}
+        {!matches && !matchError && <p>照合中...</p>}
+        {matches && (
+          <>
+            <p className="muted small">照合に使った値(表記ゆれを正規化したもの):</p>
+            <NormalizedSummary normalized={matches.normalized} />
+            <MatchResults results={matches.results} />
+          </>
+        )}
+      </section>
 
       <h2>取込元テキスト(自動抽出のもと)</h2>
       <pre className="raw-text">{property.raw_text}</pre>

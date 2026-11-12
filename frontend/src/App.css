@@ -188,3 +188,268 @@ textarea {
 section {
   margin-bottom: 2rem;
 }
+
+/* ---- ナビゲーション ---- */
+.nav-links {
+  display: flex;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.small {
+  font-size: 0.85rem;
+}
+
+.pre-line {
+  white-space: pre-line;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.button-link {
+  display: inline-block;
+  padding: 0.5rem 1.25rem;
+  border-radius: 6px;
+  background: #222;
+  color: #fff;
+  text-decoration: none;
+  font-size: 0.95rem;
+}
+
+button.secondary {
+  background: #fff;
+  color: #222;
+}
+
+button.danger {
+  background: #fff;
+  color: #c0392b;
+  border-color: #c0392b;
+}
+
+button.link-button {
+  background: none;
+  border: none;
+  color: #1565c0;
+  padding: 0.5rem 0;
+}
+
+.form-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+/* ---- マッチング結果 ---- */
+.match-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.match-card {
+  border: 1px solid #e2e2e2;
+  border-left-width: 4px;
+  border-radius: 10px;
+  padding: 0.9rem 1rem;
+  background: #fff;
+}
+
+.match-card .card-header {
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.match-name {
+  font-weight: 700;
+  color: inherit;
+}
+
+.verdict-match {
+  border-left-color: #2e7d32;
+}
+.verdict-possible {
+  border-left-color: #f9a825;
+}
+.verdict-near {
+  border-left-color: #ef6c00;
+}
+.verdict-unmatched {
+  border-left-color: #bbb;
+  opacity: 0.8;
+}
+
+.verdict-badge-match {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+.verdict-badge-possible {
+  background: #fff8e1;
+  color: #8d6e00;
+}
+.verdict-badge-near {
+  background: #fff3e0;
+  color: #e65100;
+}
+.verdict-badge-unmatched {
+  background: #f2f2f2;
+  color: #666;
+}
+
+.badge {
+  white-space: nowrap;
+}
+
+.badge-inactive {
+  background: #f2f2f2;
+  color: #666;
+  margin-left: 0.5rem;
+}
+
+.card-inactive {
+  opacity: 0.6;
+}
+
+.check-list {
+  list-style: none;
+  padding: 0;
+  margin: 0.5rem 0 0;
+  font-size: 0.85rem;
+}
+
+.check {
+  display: grid;
+  grid-template-columns: 1.2rem 4.5rem 1fr;
+  gap: 0.25rem;
+  padding: 0.15rem 0;
+}
+
+.check-mark {
+  font-weight: 700;
+}
+
+.check-label {
+  color: #555;
+}
+
+.check-ok .check-mark {
+  color: #2e7d32;
+}
+.check-ng {
+  color: #c0392b;
+}
+.check-unknown {
+  color: #8d6e00;
+}
+
+.tag-missing {
+  color: #999;
+}
+
+/* ---- 会社フォーム ---- */
+.buyer-form fieldset {
+  border: 1px solid #e2e2e2;
+  border-radius: 10px;
+  padding: 1rem 1.25rem;
+  margin: 0 0 1.5rem;
+}
+
+.buyer-form legend {
+  font-weight: 700;
+  padding: 0 0.4rem;
+}
+
+.buyer-form label,
+.buyer-form .field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  margin-bottom: 0.9rem;
+  font-size: 0.9rem;
+  flex: 1;
+}
+
+.buyer-form input[type="text"],
+.buyer-form input:not([type]),
+.buyer-form input[type="email"],
+.buyer-form input[type="tel"],
+.buyer-form input[type="number"] {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 0.95rem;
+}
+
+.buyer-form textarea {
+  margin-bottom: 0;
+}
+
+.form-row {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.form-row > label {
+  min-width: 180px;
+}
+
+.field-label {
+  font-size: 0.9rem;
+}
+
+label.checkbox,
+.buyer-form label.checkbox {
+  flex-direction: row;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.chip-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  align-items: center;
+  margin-bottom: 0.9rem;
+}
+
+.buyer-form label.chip,
+.chip {
+  flex-direction: row;
+  flex: none;
+  margin: 0;
+  padding: 0.3rem 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 999px;
+  background: #fff;
+  color: #333;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.chip input {
+  display: none;
+}
+
+.buyer-form label.chip-on {
+  background: #222;
+  color: #fff;
+  border-color: #222;
+}
+
+.chip-button {
+  padding: 0.2rem 0.6rem;
+}
+
+.required {
+  font-size: 0.7rem;
+  color: #c0392b;
+  margin-left: 0.25rem;
+}

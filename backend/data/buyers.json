@@ -1,0 +1,164 @@
+[
+  {
+    "id": "sample-a",
+    "name": "【サンプル】A社(都心一棟RC)",
+    "contact_name": null,
+    "contact_email": null,
+    "contact_phone": null,
+    "notes": "都心の築浅RC一棟を中心に購入。サンプルデータのため実際の条件に置き換えてください。",
+    "active": true,
+    "criteria": {
+      "categories": [
+        "一棟マンション",
+        "一棟ビル"
+      ],
+      "areas": [
+        "東京23区"
+      ],
+      "excluded_areas": [],
+      "min_price_man": 30000,
+      "max_price_man": 200000,
+      "min_yield_pct": null,
+      "max_age_years": 30,
+      "structures": [
+        "RC/SRC"
+      ],
+      "min_land_tsubo": null,
+      "max_land_tsubo": null,
+      "max_walk_minutes": 10,
+      "ng_keywords": [
+        "借地",
+        "再建築不可"
+      ]
+    },
+    "updated_at": "2026-11-12T00:00:00"
+  },
+  {
+    "id": "sample-b",
+    "name": "【サンプル】B社(高利回りアパート)",
+    "contact_name": null,
+    "contact_email": null,
+    "contact_phone": null,
+    "notes": "首都圏の利回り重視。築古木造も可。",
+    "active": true,
+    "criteria": {
+      "categories": [
+        "一棟アパート",
+        "一棟マンション"
+      ],
+      "areas": [
+        "一都三県"
+      ],
+      "excluded_areas": [],
+      "min_price_man": null,
+      "max_price_man": 30000,
+      "min_yield_pct": 7.0,
+      "max_age_years": null,
+      "structures": [],
+      "min_land_tsubo": null,
+      "max_land_tsubo": null,
+      "max_walk_minutes": 15,
+      "ng_keywords": []
+    },
+    "updated_at": "2026-11-12T00:00:00"
+  },
+  {
+    "id": "sample-c",
+    "name": "【サンプル】C社(用地仕入れ)",
+    "contact_name": null,
+    "contact_email": null,
+    "contact_phone": null,
+    "notes": "マンション・戸建用地。城南・城西中心。",
+    "active": true,
+    "criteria": {
+      "categories": [
+        "土地"
+      ],
+      "areas": [
+        "城南",
+        "城西",
+        "都心5区"
+      ],
+      "excluded_areas": [],
+      "min_price_man": null,
+      "max_price_man": null,
+      "min_yield_pct": null,
+      "max_age_years": null,
+      "structures": [],
+      "min_land_tsubo": 30,
+      "max_land_tsubo": 300,
+      "max_walk_minutes": 10,
+      "ng_keywords": [
+        "市街化調整区域",
+        "再建築不可"
+      ]
+    },
+    "updated_at": "2026-11-12T00:00:00"
+  },
+  {
+    "id": "sample-d",
+    "name": "【サンプル】D社(区分・戸建買取)",
+    "contact_name": null,
+    "contact_email": null,
+    "contact_phone": null,
+    "notes": "区分マンション・戸建の再販買取。",
+    "active": true,
+    "criteria": {
+      "categories": [
+        "区分マンション",
+        "戸建"
+      ],
+      "areas": [
+        "東京都",
+        "神奈川県"
+      ],
+      "excluded_areas": [],
+      "min_price_man": null,
+      "max_price_man": 15000,
+      "min_yield_pct": null,
+      "max_age_years": 40,
+      "structures": [],
+      "min_land_tsubo": null,
+      "max_land_tsubo": null,
+      "max_walk_minutes": null,
+      "ng_keywords": [
+        "旧耐震"
+      ]
+    },
+    "updated_at": "2026-11-12T00:00:00"
+  },
+  {
+    "id": "sample-e",
+    "name": "【サンプル】E社(地方中核都市)",
+    "contact_name": null,
+    "contact_email": null,
+    "contact_phone": null,
+    "notes": "政令市の一棟収益。",
+    "active": true,
+    "criteria": {
+      "categories": [
+        "一棟マンション",
+        "一棟アパート",
+        "一棟ビル"
+      ],
+      "areas": [
+        "札幌市",
+        "名古屋市",
+        "大阪市",
+        "福岡市",
+        "仙台市"
+      ],
+      "excluded_areas": [],
+      "min_price_man": 10000,
+      "max_price_man": null,
+      "min_yield_pct": 6.0,
+      "max_age_years": null,
+      "structures": [],
+      "min_land_tsubo": null,
+      "max_land_tsubo": null,
+      "max_walk_minutes": null,
+      "ng_keywords": []
+    },
+    "updated_at": "2026-11-12T00:00:00"
+  }
+]
