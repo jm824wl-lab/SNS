@@ -1,11 +1,319 @@
 [
   {
-    "id": "sample-a",
-    "name": "【サンプル】A社(都心一棟RC)",
-    "contact_name": null,
-    "contact_email": null,
-    "contact_phone": null,
-    "notes": "都心の築浅RC一棟を中心に購入。サンプルデータのため実際の条件に置き換えてください。",
+    "id": "yms-apartment",
+    "name": "株式会社YMS(一棟アパート)",
+    "contact_name": "井坂 渉",
+    "contact_email": "isaka@yms.tokyo",
+    "contact_phone": "080-3258-4145",
+    "notes": "2,000万〜6,000万円を特に積極検討。木造は築18〜44年、軽量鉄骨は築16〜44年。駅距離不問。新耐震・遵法性問題なし。全空・要修繕も可。11/20までに契約可能な案件を優先。\n\n出典: 2026/11/11「【買取物件募集】一都三県のアパート｜3,000万～9,000万円を重点検討」",
+    "active": true,
+    "criteria": {
+      "categories": [
+        "一棟アパート"
+      ],
+      "areas": [
+        "一都三県"
+      ],
+      "excluded_areas": [],
+      "min_price_man": 3000,
+      "max_price_man": 20000,
+      "min_yield_pct": 8.5,
+      "max_age_years": 44,
+      "structures": [
+        "木造",
+        "鉄骨"
+      ],
+      "min_land_tsubo": null,
+      "max_land_tsubo": null,
+      "max_walk_minutes": null,
+      "ng_keywords": [
+        "再建築不可"
+      ]
+    },
+    "updated_at": "2026-11-12T00:00:00"
+  },
+  {
+    "id": "yms-mansion",
+    "name": "株式会社YMS(一棟マンション)",
+    "contact_name": "井坂 渉",
+    "contact_email": "isaka@yms.tokyo",
+    "contact_phone": "080-3258-4145",
+    "notes": "利回りは23区6.5%以上・郊外9%以上(ここでは低い方の6.5%で判定)。16号線内側希望。入居率不問、告知事項・遵法性違反も検討可。\n\n出典: 2026/11/06「【売り買い二刀流】年末まで走ります！」",
+    "active": true,
+    "criteria": {
+      "categories": [
+        "一棟マンション"
+      ],
+      "areas": [
+        "一都三県"
+      ],
+      "excluded_areas": [],
+      "min_price_man": 2000,
+      "max_price_man": 30000,
+      "min_yield_pct": 6.5,
+      "max_age_years": null,
+      "structures": [
+        "RC/SRC",
+        "鉄骨"
+      ],
+      "min_land_tsubo": null,
+      "max_land_tsubo": null,
+      "max_walk_minutes": null,
+      "ng_keywords": []
+    },
+    "updated_at": "2026-11-12T00:00:00"
+  },
+  {
+    "id": "yms-building",
+    "name": "株式会社YMS(一棟空ビル・空戸建)",
+    "contact_name": "井坂 渉",
+    "contact_email": "isaka@yms.tokyo",
+    "contact_phone": "080-3258-4145",
+    "notes": "全空ビル(一部賃貸中も可)・空戸建。1〜3億円中心、5億円まで相談可。旧耐震可。築年数不問。駅15分までは相談可。検査済証ありだと金額が伸びる。出口は民泊利用の中華系投資家/解体して土地利用のビルダー。\n\n出典: 2026/11/02「【月10棟仕入れます】空ビル情報求む！」、10/23「一棟ビル探しております！」、10/29「買取案件・お客様ニーズをご共有ください」",
+    "active": true,
+    "criteria": {
+      "categories": [
+        "一棟ビル",
+        "戸建"
+      ],
+      "areas": [
+        "東京23区",
+        "横浜市",
+        "川崎市",
+        "さいたま市"
+      ],
+      "excluded_areas": [],
+      "min_price_man": null,
+      "max_price_man": 30000,
+      "min_yield_pct": null,
+      "max_age_years": null,
+      "structures": [],
+      "min_land_tsubo": null,
+      "max_land_tsubo": null,
+      "max_walk_minutes": 10,
+      "ng_keywords": []
+    },
+    "updated_at": "2026-11-12T00:00:00"
+  },
+  {
+    "id": "idex",
+    "name": "アイデックス株式会社",
+    "contact_name": "大嶋 陽太",
+    "contact_email": "oshima@i-dex.co.jp",
+    "contact_phone": "070-3149-5610",
+    "notes": "1億〜3億円程度が目安、上限5億円。表面6%以上目安。新耐震以降。条件未満でも収益性次第で検討可。直近実績: 行徳RC築36年9.0%2.2億 等。\n\n出典: 2026/10/26「物件情報ご紹介のお願い（仕入れ強化中）」、11/02・11/09「物件のご紹介依頼」",
+    "active": true,
+    "criteria": {
+      "categories": [
+        "一棟マンション",
+        "一棟アパート",
+        "一棟ビル"
+      ],
+      "areas": [
+        "一都三県"
+      ],
+      "excluded_areas": [],
+      "min_price_man": 10000,
+      "max_price_man": 50000,
+      "min_yield_pct": 6.0,
+      "max_age_years": 44,
+      "structures": [],
+      "min_land_tsubo": null,
+      "max_land_tsubo": null,
+      "max_walk_minutes": null,
+      "ng_keywords": []
+    },
+    "updated_at": "2026-11-12T00:00:00"
+  },
+  {
+    "id": "avac",
+    "name": "株式会社アバック",
+    "contact_name": "岩久 桃太朗",
+    "contact_email": "momotaro.iwaku@a-va-c.com",
+    "contact_phone": "080-6165-4783",
+    "notes": "商業ビル・区分店舗・商業用地(10〜50坪以内)。1〜10億円の案件が多い。一都三県＋全国主要都市の商業性あるエリア。旧耐震可・構造不問。空室・退去予定、オーナーチェンジも可。飲食店舗ニーズのあるエリアに強い。区分店舗は種別「その他」で判定。\n\n出典: 2026/11/02・09/30「【買取強化中！！】空室店舗・商業ビル案件探してます！」(添付: 仕入れ条件資料.pdf)",
+    "active": true,
+    "criteria": {
+      "categories": [
+        "一棟ビル",
+        "土地",
+        "その他"
+      ],
+      "areas": [],
+      "excluded_areas": [],
+      "min_price_man": 3000,
+      "max_price_man": 300000,
+      "min_yield_pct": null,
+      "max_age_years": null,
+      "structures": [],
+      "min_land_tsubo": 10,
+      "max_land_tsubo": 50,
+      "max_walk_minutes": 10,
+      "ng_keywords": []
+    },
+    "updated_at": "2026-11-12T00:00:00"
+  },
+  {
+    "id": "mercury",
+    "name": "株式会社マーキュリー",
+    "contact_name": "石川 剛",
+    "contact_email": "t_ishikawa@mercury-realestate.co.jp",
+    "contact_phone": "080-3936-7991",
+    "notes": "権利不問(借地権・底地・再建築不可・共有持分も可)。旧耐震可、駅徒歩不問。古店舗ビル(立退き案件)も可。現況渡し・契約不適合責任免責・専任返し可。別担当: 名倉 光翼 nakura@mercury-realestate.co.jp\n\n出典: 2026/11/02・10/05「【買取案件大募集】/【買取強化中】株式会社マーキュリー」",
+    "active": true,
+    "criteria": {
+      "categories": [
+        "土地",
+        "戸建",
+        "一棟アパート",
+        "一棟マンション",
+        "区分マンション",
+        "一棟ビル"
+      ],
+      "areas": [
+        "一都三県"
+      ],
+      "excluded_areas": [],
+      "min_price_man": null,
+      "max_price_man": 300000,
+      "min_yield_pct": null,
+      "max_age_years": null,
+      "structures": [],
+      "min_land_tsubo": null,
+      "max_land_tsubo": null,
+      "max_walk_minutes": null,
+      "ng_keywords": []
+    },
+    "updated_at": "2026-11-12T00:00:00"
+  },
+  {
+    "id": "diff",
+    "name": "株式会社diff(trias)",
+    "contact_name": "秋山 義友",
+    "contact_email": "y.akiyama@trias.jp",
+    "contact_phone": "070-9168-4379",
+    "notes": "マンション用地。城南・城西が得意。40〜100坪前後が得意、駅7分以内なら特に◎。3階建以上が可能なエリア(2種高度以上)。ミニホテル用地・高級戸建用地も購入。\n\n出典: 2026/10/08「今月決算月！！！１棟ミニマンション用地探しております！」",
+    "active": true,
+    "criteria": {
+      "categories": [
+        "土地"
+      ],
+      "areas": [
+        "東京23区"
+      ],
+      "excluded_areas": [],
+      "min_price_man": null,
+      "max_price_man": null,
+      "min_yield_pct": null,
+      "max_age_years": null,
+      "structures": [],
+      "min_land_tsubo": 40,
+      "max_land_tsubo": null,
+      "max_walk_minutes": 10,
+      "ng_keywords": []
+    },
+    "updated_at": "2026-11-12T00:00:00"
+  },
+  {
+    "id": "terass-small-building",
+    "name": "TERASS(23区 狭小一棟収益)",
+    "contact_name": "一乗",
+    "contact_email": "saki.ichijo@terass.com",
+    "contact_phone": "080-4135-8547",
+    "notes": "TERASS Wealth Advisoryの顧客ニーズ。紹介は売主物件・元付物件に限り、商流の明記が必要。築15年以上(旧耐震も可)。商業ビル・事務所・レジ、特に駅近の商業/テナントビル。\n\n出典: 2026/10/13「【買いニーズあり／物件情報募集】狭小収益物件、高額飲食テナントビル」①",
+    "active": true,
+    "criteria": {
+      "categories": [
+        "一棟ビル",
+        "一棟マンション"
+      ],
+      "areas": [
+        "東京23区"
+      ],
+      "excluded_areas": [],
+      "min_price_man": null,
+      "max_price_man": 500000,
+      "min_yield_pct": null,
+      "max_age_years": null,
+      "structures": [
+        "RC/SRC",
+        "鉄骨"
+      ],
+      "min_land_tsubo": null,
+      "max_land_tsubo": null,
+      "max_walk_minutes": 10,
+      "ng_keywords": []
+    },
+    "updated_at": "2026-11-12T00:00:00"
+  },
+  {
+    "id": "terass-small-land",
+    "name": "TERASS(都心 狭小用地)",
+    "contact_name": "一乗",
+    "contact_email": "saki.ichijo@terass.com",
+    "contact_phone": "080-4135-8547",
+    "notes": "TERASS Wealth Advisoryの顧客ニーズ。紹介は売主物件・元付物件に限り、商流の明記が必要。用途: テナント・事務所・飲食ビル。立退前・測量前・古家付きも相談可。池袋駅周辺(豊島区)・台東区周辺も対象。\n\n出典: 2026/10/13 同メール②",
+    "active": true,
+    "criteria": {
+      "categories": [
+        "土地"
+      ],
+      "areas": [
+        "都心5区",
+        "目黒区",
+        "品川区",
+        "豊島区",
+        "台東区"
+      ],
+      "excluded_areas": [],
+      "min_price_man": null,
+      "max_price_man": null,
+      "min_yield_pct": null,
+      "max_age_years": null,
+      "structures": [],
+      "min_land_tsubo": 13,
+      "max_land_tsubo": null,
+      "max_walk_minutes": 5,
+      "ng_keywords": []
+    },
+    "updated_at": "2026-11-12T00:00:00"
+  },
+  {
+    "id": "terass-prime-retail",
+    "name": "TERASS(都心 築浅店舗付き一棟・海外投資家)",
+    "contact_name": "一乗",
+    "contact_email": "saki.ichijo@terass.com",
+    "contact_phone": "080-4135-8547",
+    "notes": "TERASS Wealth Advisoryの顧客ニーズ。紹介は売主物件・元付物件に限り、商流の明記が必要。店舗物件、または下層階に店舗が入る物件。台湾・香港の投資家。土地100坪以上が望ましい(30坪で見送り事例あり)。\n\n出典: 2026/10/13 同メール③、09/29「一棟収益・区分店舗・土地・実需区分」②",
+    "active": true,
+    "criteria": {
+      "categories": [
+        "一棟ビル",
+        "一棟マンション"
+      ],
+      "areas": [
+        "都心5区"
+      ],
+      "excluded_areas": [],
+      "min_price_man": 100000,
+      "max_price_man": null,
+      "min_yield_pct": 3.5,
+      "max_age_years": 10,
+      "structures": [],
+      "min_land_tsubo": null,
+      "max_land_tsubo": null,
+      "max_walk_minutes": null,
+      "ng_keywords": []
+    },
+    "updated_at": "2026-11-12T00:00:00"
+  },
+  {
+    "id": "terass-jonan",
+    "name": "TERASS(城南 一棟収益・法人現金)",
+    "contact_name": "一乗",
+    "contact_email": "saki.ichijo@terass.com",
+    "contact_phone": "080-4135-8547",
+    "notes": "TERASS Wealth Advisoryの顧客ニーズ。紹介は売主物件・元付物件に限り、商流の明記が必要。利回り4%前後・築浅(築年数は15年以内で仮設定)。法人・現金決済予定。\n\n出典: 2026/09/29「一棟収益・区分店舗・土地・実需区分」①",
     "active": true,
     "criteria": {
       "categories": [
@@ -13,48 +321,110 @@
         "一棟ビル"
       ],
       "areas": [
-        "東京23区"
+        "品川区",
+        "世田谷区",
+        "大田区",
+        "目黒区"
       ],
       "excluded_areas": [],
-      "min_price_man": 30000,
-      "max_price_man": 200000,
-      "min_yield_pct": null,
-      "max_age_years": 30,
-      "structures": [
-        "RC/SRC"
-      ],
+      "min_price_man": 50000,
+      "max_price_man": 100000,
+      "min_yield_pct": 3.5,
+      "max_age_years": 15,
+      "structures": [],
       "min_land_tsubo": null,
       "max_land_tsubo": null,
-      "max_walk_minutes": 10,
-      "ng_keywords": [
-        "借地",
-        "再建築不可"
-      ]
+      "max_walk_minutes": null,
+      "ng_keywords": []
     },
     "updated_at": "2026-11-12T00:00:00"
   },
   {
-    "id": "sample-b",
-    "name": "【サンプル】B社(高利回りアパート)",
-    "contact_name": null,
-    "contact_email": null,
-    "contact_phone": null,
-    "notes": "首都圏の利回り重視。築古木造も可。",
+    "id": "terass-large",
+    "name": "TERASS(大型 一棟収益・土地 300坪)",
+    "contact_name": "一乗",
+    "contact_email": "saki.ichijo@terass.com",
+    "contact_phone": "080-4135-8547",
+    "notes": "TERASS Wealth Advisoryの顧客ニーズ。紹介は売主物件・元付物件に限り、商流の明記が必要。予算30億円まで(土地は18億円)。土地300坪程度・建物600坪程度(23区外は下限)。駐車場11台・4tユニック、前面道路4.5m以上。\n\n出典: 2026/10/29「【買いニーズあり／物件情報募集】寄宿舎、シェアハウス」①",
     "active": true,
     "criteria": {
       "categories": [
+        "一棟マンション",
         "一棟アパート",
-        "一棟マンション"
+        "一棟ビル",
+        "土地"
       ],
       "areas": [
-        "一都三県"
+        "港区",
+        "千代田区",
+        "中央区",
+        "江戸川区",
+        "江東区",
+        "豊島区",
+        "西東京市",
+        "東久留米市",
+        "狛江市",
+        "調布市",
+        "府中市",
+        "小金井市",
+        "国分寺市",
+        "国立市",
+        "武蔵野市",
+        "三鷹市"
       ],
       "excluded_areas": [],
       "min_price_man": null,
-      "max_price_man": 30000,
-      "min_yield_pct": 7.0,
+      "max_price_man": 300000,
+      "min_yield_pct": null,
       "max_age_years": null,
       "structures": [],
+      "min_land_tsubo": 250,
+      "max_land_tsubo": null,
+      "max_walk_minutes": 15,
+      "ng_keywords": []
+    },
+    "updated_at": "2026-11-12T00:00:00"
+  },
+  {
+    "id": "terass-sharehouse",
+    "name": "TERASS(シェアハウス出店用)",
+    "contact_name": "一乗",
+    "contact_email": "saki.ichijo@terass.com",
+    "contact_phone": "080-4135-8547",
+    "notes": "TERASS Wealth Advisoryの顧客ニーズ。紹介は売主物件・元付物件に限り、商流の明記が必要。30〜90室・1室15㎡前後・賃料5万円前後想定。寄宿舎・共同住宅、用途変更可能な物件、老人ホーム等からのコンバージョンも可。木造は要相談。対象路線の指定あり(中央線/総武線 国分寺〜船橋、井の頭線、東急各線 等)。\n\n出典: 2026/10/29 同メール②",
+    "active": true,
+    "criteria": {
+      "categories": [
+        "一棟マンション",
+        "一棟ビル"
+      ],
+      "areas": [
+        "中野区",
+        "目黒区",
+        "文京区",
+        "豊島区",
+        "杉並区",
+        "世田谷区",
+        "渋谷区",
+        "新宿区",
+        "大田区",
+        "江東区",
+        "台東区",
+        "墨田区",
+        "武蔵野市",
+        "三鷹市",
+        "国立市",
+        "国分寺市"
+      ],
+      "excluded_areas": [],
+      "min_price_man": null,
+      "max_price_man": null,
+      "min_yield_pct": null,
+      "max_age_years": null,
+      "structures": [
+        "RC/SRC",
+        "鉄骨"
+      ],
       "min_land_tsubo": null,
       "max_land_tsubo": null,
       "max_walk_minutes": 15,
@@ -63,21 +433,49 @@
     "updated_at": "2026-11-12T00:00:00"
   },
   {
-    "id": "sample-c",
-    "name": "【サンプル】C社(用地仕入れ)",
-    "contact_name": null,
-    "contact_email": null,
-    "contact_phone": null,
-    "notes": "マンション・戸建用地。城南・城西中心。",
+    "id": "terass-own-office",
+    "name": "TERASS(渋谷南平台・上目黒 自社ビル)",
+    "contact_name": "一乗",
+    "contact_email": "saki.ichijo@terass.com",
+    "contact_phone": "080-4135-8547",
+    "notes": "TERASS Wealth Advisoryの顧客ニーズ。紹介は売主物件・元付物件に限り、商流の明記が必要。自社拠点用の狭小低層一棟ビル、または自社ビル建築用地(50坪前後、地上2階程度・地下も検討)。予算7億円(用地の場合は土地＋建築費)。駐車場あれば尚可。\n\n出典: 2026/10/22「【買いニーズ】都内一棟ビル／札幌市中心部 ホテル開発用地」①②",
+    "active": true,
+    "criteria": {
+      "categories": [
+        "一棟ビル",
+        "土地"
+      ],
+      "areas": [
+        "南平台町",
+        "上目黒"
+      ],
+      "excluded_areas": [],
+      "min_price_man": null,
+      "max_price_man": 70000,
+      "min_yield_pct": null,
+      "max_age_years": null,
+      "structures": [],
+      "min_land_tsubo": null,
+      "max_land_tsubo": null,
+      "max_walk_minutes": null,
+      "ng_keywords": []
+    },
+    "updated_at": "2026-11-12T00:00:00"
+  },
+  {
+    "id": "terass-sapporo-hotel",
+    "name": "TERASS(札幌中心部 ホテル用地)",
+    "contact_name": "一乗",
+    "contact_email": "saki.ichijo@terass.com",
+    "contact_phone": "080-4135-8547",
+    "notes": "TERASS Wealth Advisoryの顧客ニーズ。紹介は売主物件・元付物件に限り、商流の明記が必要。札幌駅・大通駅・すすきの駅のいずれかから徒歩10分以内(必須)。自社開発・長期保有。\n\n出典: 2026/10/22 同メール③",
     "active": true,
     "criteria": {
       "categories": [
         "土地"
       ],
       "areas": [
-        "城南",
-        "城西",
-        "都心5区"
+        "札幌市"
       ],
       "excluded_areas": [],
       "min_price_man": null,
@@ -85,76 +483,253 @@
       "min_yield_pct": null,
       "max_age_years": null,
       "structures": [],
-      "min_land_tsubo": 30,
-      "max_land_tsubo": 300,
+      "min_land_tsubo": 50,
+      "max_land_tsubo": 100,
       "max_walk_minutes": 10,
-      "ng_keywords": [
-        "市街化調整区域",
-        "再建築不可"
-      ]
+      "ng_keywords": []
     },
     "updated_at": "2026-11-12T00:00:00"
   },
   {
-    "id": "sample-d",
-    "name": "【サンプル】D社(区分・戸建買取)",
-    "contact_name": null,
-    "contact_email": null,
-    "contact_phone": null,
-    "notes": "区分マンション・戸建の再販買取。",
+    "id": "funds",
+    "name": "ファンズ不動産株式会社",
+    "contact_name": "鎌田 一希",
+    "contact_email": "kazuki_kamata@funds.jp",
+    "contact_phone": "080-1679-1162",
+    "notes": "水面下案件(エンド売主・決済前・割安ポイントあり)を希望。ボリューム10億円程度が目安。一棟収益は都心5%〜・その他6%〜(ここでは5%で判定)。土地は10坪以上。立退き・バリューアップ・空室多も可。\n\n出典: 2026/10/23「【弊社物件への客付け依頼と情報交換】について」②",
     "active": true,
     "criteria": {
       "categories": [
         "区分マンション",
-        "戸建"
-      ],
-      "areas": [
-        "東京都",
-        "神奈川県"
-      ],
-      "excluded_areas": [],
-      "min_price_man": null,
-      "max_price_man": 15000,
-      "min_yield_pct": null,
-      "max_age_years": 40,
-      "structures": [],
-      "min_land_tsubo": null,
-      "max_land_tsubo": null,
-      "max_walk_minutes": null,
-      "ng_keywords": [
-        "旧耐震"
-      ]
-    },
-    "updated_at": "2026-11-12T00:00:00"
-  },
-  {
-    "id": "sample-e",
-    "name": "【サンプル】E社(地方中核都市)",
-    "contact_name": null,
-    "contact_email": null,
-    "contact_phone": null,
-    "notes": "政令市の一棟収益。",
-    "active": true,
-    "criteria": {
-      "categories": [
+        "土地",
         "一棟マンション",
         "一棟アパート",
         "一棟ビル"
       ],
       "areas": [
-        "札幌市",
-        "名古屋市",
+        "一都三県",
+        "京都市",
         "大阪市",
         "福岡市",
-        "仙台市"
+        "札幌市",
+        "名古屋市"
       ],
       "excluded_areas": [],
-      "min_price_man": 10000,
+      "min_price_man": null,
+      "max_price_man": 100000,
+      "min_yield_pct": 5.0,
+      "max_age_years": null,
+      "structures": [],
+      "min_land_tsubo": 10,
+      "max_land_tsubo": null,
+      "max_walk_minutes": null,
+      "ng_keywords": []
+    },
+    "updated_at": "2026-11-12T00:00:00"
+  },
+  {
+    "id": "rezard-apartment",
+    "name": "株式会社Rezard(一棟アパート)",
+    "contact_name": "外谷 元希",
+    "contact_email": "masaki_toya@rezard-co.jp",
+    "contact_phone": "090-1804-6633",
+    "notes": "東京都下(多摩)は積極的。23区は構造問わず利回り7%〜。3県はグロス1億前後で利回りまたは積算重視。\n\n出典: 2026/09/04「【買取案件大募集！価格に自信があります！】」",
+    "active": true,
+    "criteria": {
+      "categories": [
+        "一棟アパート"
+      ],
+      "areas": [
+        "一都三県"
+      ],
+      "excluded_areas": [],
+      "min_price_man": null,
       "max_price_man": null,
-      "min_yield_pct": 6.0,
+      "min_yield_pct": 7.0,
       "max_age_years": null,
       "structures": [],
       "min_land_tsubo": null,
+      "max_land_tsubo": null,
+      "max_walk_minutes": null,
+      "ng_keywords": []
+    },
+    "updated_at": "2026-11-12T00:00:00"
+  },
+  {
+    "id": "rezard-land",
+    "name": "株式会社Rezard(アパート用地・立退き用地)",
+    "contact_name": "外谷 元希",
+    "contact_email": "masaki_toya@rezard-co.jp",
+    "contact_phone": "090-1804-6633",
+    "notes": "アパート用地: 都内40〜100坪・低層地域以外・整形地が好ましい。立退き用地: 土地値重視、レジのみ(店舗立退きは難しい)。\n\n出典: 2026/09/04 同メール",
+    "active": true,
+    "criteria": {
+      "categories": [
+        "土地"
+      ],
+      "areas": [
+        "東京都"
+      ],
+      "excluded_areas": [],
+      "min_price_man": null,
+      "max_price_man": null,
+      "min_yield_pct": null,
+      "max_age_years": null,
+      "structures": [],
+      "min_land_tsubo": 40,
+      "max_land_tsubo": 100,
+      "max_walk_minutes": null,
+      "ng_keywords": []
+    },
+    "updated_at": "2026-11-12T00:00:00"
+  },
+  {
+    "id": "rezard-house",
+    "name": "株式会社Rezard(築古戸建・再販)",
+    "contact_name": "外谷 元希",
+    "contact_email": "masaki_toya@rezard-co.jp",
+    "contact_phone": "090-1804-6633",
+    "notes": "新耐震の築古戸建。土地が小さく分譲業者が扱わない物件をリフォーム再販。東京都はOCも可。\n\n出典: 2026/09/04 同メール",
+    "active": true,
+    "criteria": {
+      "categories": [
+        "戸建"
+      ],
+      "areas": [
+        "一都三県"
+      ],
+      "excluded_areas": [],
+      "min_price_man": null,
+      "max_price_man": null,
+      "min_yield_pct": null,
+      "max_age_years": 44,
+      "structures": [],
+      "min_land_tsubo": null,
+      "max_land_tsubo": null,
+      "max_walk_minutes": null,
+      "ng_keywords": []
+    },
+    "updated_at": "2026-11-12T00:00:00"
+  },
+  {
+    "id": "threei",
+    "name": "株式会社スリーアイ(再生系RCレジ・自社保有)",
+    "contact_name": "櫻井 貴之",
+    "contact_email": "sakurai.t.threei@gmail.com",
+    "contact_phone": "080-7026-0697",
+    "notes": "空室が多い・傷みが激しい物件の再生保有。満室想定利回り: 築25年10%〜・築35年13%〜(ここでは10%で判定)。郊外も可(箱根・深谷・酒々井まで実績)。他社に情報を出さない。\n\n出典: 2026/01/23「【自社買取のみ】再生系レジが得意です。」",
+    "active": true,
+    "criteria": {
+      "categories": [
+        "一棟マンション"
+      ],
+      "areas": [
+        "一都三県",
+        "名古屋市",
+        "大阪市"
+      ],
+      "excluded_areas": [],
+      "min_price_man": null,
+      "max_price_man": 40000,
+      "min_yield_pct": 10.0,
+      "max_age_years": 44,
+      "structures": [
+        "RC/SRC"
+      ],
+      "min_land_tsubo": null,
+      "max_land_tsubo": null,
+      "max_walk_minutes": null,
+      "ng_keywords": []
+    },
+    "updated_at": "2026-11-12T00:00:00"
+  },
+  {
+    "id": "threei-client-land",
+    "name": "スリーアイ顧客(MS・アパート用地)",
+    "contact_name": "櫻井 貴之",
+    "contact_email": "sakurai.t.threei@gmail.com",
+    "contact_phone": "080-7026-0697",
+    "notes": "地積80㎡〜。駅7分以内が理想。3種高度地区(2種高度は北道路のみ)、建蔽60%・容積200%以上。\n\n出典: 2026/01/23 同メール 顧客ニーズ②(仲介)",
+    "active": true,
+    "criteria": {
+      "categories": [
+        "土地"
+      ],
+      "areas": [
+        "東京23区",
+        "横浜市",
+        "川崎市"
+      ],
+      "excluded_areas": [],
+      "min_price_man": null,
+      "max_price_man": 20000,
+      "min_yield_pct": null,
+      "max_age_years": null,
+      "structures": [],
+      "min_land_tsubo": 24,
+      "max_land_tsubo": null,
+      "max_walk_minutes": 10,
+      "ng_keywords": []
+    },
+    "updated_at": "2026-11-12T00:00:00"
+  },
+  {
+    "id": "threei-client-house-land",
+    "name": "スリーアイ顧客(戸建用地・城南5区)",
+    "contact_name": "櫻井 貴之",
+    "contact_email": "sakurai.t.threei@gmail.com",
+    "contact_phone": "080-7026-0697",
+    "notes": "1区画80〜150㎡・1区画1.5億円以内。既存建物ありも可。間口6m以上が検討しやすい。そのほか顧客ニーズ: 500坪以上の開発用地(2億〜)、1都3県の空倉庫(延床100坪〜・20億以下)。\n\n出典: 2026/01/23 同メール 顧客ニーズ③(仲介)",
+    "active": true,
+    "criteria": {
+      "categories": [
+        "土地"
+      ],
+      "areas": [
+        "品川区",
+        "目黒区",
+        "大田区",
+        "世田谷区",
+        "渋谷区"
+      ],
+      "excluded_areas": [],
+      "min_price_man": null,
+      "max_price_man": 15000,
+      "min_yield_pct": null,
+      "max_age_years": null,
+      "structures": [],
+      "min_land_tsubo": 24,
+      "max_land_tsubo": 46,
+      "max_walk_minutes": 10,
+      "ng_keywords": []
+    },
+    "updated_at": "2026-11-12T00:00:00"
+  },
+  {
+    "id": "mirize",
+    "name": "株式会社MIRIZE",
+    "contact_name": "成瀬 恒一",
+    "contact_email": "k.naruse@mirize.info",
+    "contact_phone": "080-8333-8603",
+    "notes": "空きの路面店舗、または敷地150㎡以上の土地(更地・上物付き可)。銀座・六本木等の都内一等地。路面店舗は種別「その他」で判定。\n\n出典: 2026/08/27「【物件情報募集】都内一等地の路面店・土地情報を探しています」",
+    "active": true,
+    "criteria": {
+      "categories": [
+        "土地",
+        "その他",
+        "一棟ビル"
+      ],
+      "areas": [
+        "銀座",
+        "六本木"
+      ],
+      "excluded_areas": [],
+      "min_price_man": null,
+      "max_price_man": null,
+      "min_yield_pct": null,
+      "max_age_years": null,
+      "structures": [],
+      "min_land_tsubo": 45,
       "max_land_tsubo": null,
       "max_walk_minutes": null,
       "ng_keywords": []
