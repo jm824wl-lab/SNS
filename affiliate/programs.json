@@ -1,0 +1,28 @@
+[
+  {
+    "id": "sample-crm",
+    "name": "ExampleCRM",
+    "target_reader": "Solo founders and small service businesses (1-10 people) in English-speaking countries who handle customer inquiries themselves",
+    "pain_points": [
+      "Inquiries are split across email and DMs, so it is unclear who has been answered",
+      "Forgetting to follow up after sending a quote",
+      "Re-reading old email threads to remember what was discussed last time",
+      "Explaining the same history again whenever the person in charge changes"
+    ],
+    "official_url": "https://example.com",
+    "link_url": "https://example.com/?ref=YOUR_AFFILIATE_ID",
+    "pricing": "要確認",
+    "payout_trigger": "要確認",
+    "payout_type": "要確認",
+    "approval_terms": "要確認",
+    "japan_eligible": false,
+    "x_promotion_allowed": false,
+    "personally_used": false,
+    "verified": false,
+    "verified_at": "",
+    "verified_facts": [],
+    "sources": [],
+    "conversions": 0,
+    "notes": "サンプル。ASPで提携後、公式規約を自分で確認して各項目を埋め、verified=true にすると自動投稿の対象になる。"
+  }
+]

@@ -1,0 +1,54 @@
+name: affiliate-autopost
+
+# 毎日 14:07 UTC(米国東部 9〜10時頃)に 生成 → 投稿(1日1本まで) → 指標取得 を実行する。
+# 実投稿はリポジトリ変数 AUTOPOST_LIVE が "true" のときだけ。それ以外はドライラン。
+on:
+  schedule:
+    - cron: "7 14 * * *"
+  workflow_dispatch:
+    inputs:
+      live:
+        description: "実際に X へ投稿する"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write  # 投稿履歴(affiliate/state/queue.json)をコミットするため
+
+concurrency:
+  group: affiliate-autopost
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: affiliate
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt pytest
+      - name: tests
+        run: python -m pytest -q tests
+      - name: generate / post / metrics
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          X_API_KEY: ${{ secrets.X_API_KEY }}
+          X_API_SECRET: ${{ secrets.X_API_SECRET }}
+          X_ACCESS_TOKEN: ${{ secrets.X_ACCESS_TOKEN }}
+          X_ACCESS_TOKEN_SECRET: ${{ secrets.X_ACCESS_TOKEN_SECRET }}
+          LIVE: ${{ (github.event_name == 'schedule' && vars.AUTOPOST_LIVE == 'true') || inputs.live == true }}
+        run: |
+          if [ "$LIVE" = "true" ]; then python -m autopost run --live; else python -m autopost run; fi
+      - name: commit state
+        if: always()
+        run: |
+          git config user.name "affiliate-autopost"
+          git config user.email "affiliate-autopost@users.noreply.github.com"
+          git add state/queue.json 2>/dev/null || exit 0
+          git diff --cached --quiet && exit 0
+          git commit -m "autopost: 投稿キュー更新 $(date -u +%F)"
+          git push
