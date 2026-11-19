@@ -28,3 +28,4 @@
   打診のため、本リストには反映していない。今後具体的な紹介が発生した場合は案件として
   追加する。
 - ダッシュボード(Artifact、メール由来の案件一覧+手動追加フォーム): 作成済み。
+  https://claude.ai/artifact/HWHTbqNTex7TnfbbE7Aoz7
