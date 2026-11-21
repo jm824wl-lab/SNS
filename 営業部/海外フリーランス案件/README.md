@@ -27,9 +27,12 @@ https://claude.ai/artifact/W1YED8U5L2jrpgeUsnvjWh
 
 ## 未整備事項・留意点
 
-- 2026-11-21時点、Web検索で確認できた実在の案件は8件(すべてUpwork)。PeoplePerHour・
-  Freelancer.comは個別の募集中求人を確認できず(過去の終了済み募集か、カテゴリページ
+- 2026-11-21時点、Web検索で確認できた実在の案件は9件(Upwork 8件、Freelancer.com 1件)。
+  PeoplePerHourは個別の募集中求人を確認できず(過去の終了済み募集か、カテゴリページ
   のみ)。
+- `https://www.freelancer.jp/dashboard`への直接アクセスは、本セッションのネットワーク
+  制限(DNS解決不可)により失敗。freelancer.jpは国際版Freelancer.comと同一プラット
+  フォームのため、別地域ドメイン経由で求人を確認した。
 - フリーランス案件は応募期限が短く(数時間〜数日で締切・終了する場合が多い)、
   掲載URLはすぐに無効になる可能性が高い。本リストは2026-11-21時点のスナップショット
   であり、実際に応募する際は各URLで募集状況を再確認すること。
