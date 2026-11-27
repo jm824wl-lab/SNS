@@ -8896,8 +8896,8 @@
     "transaction_type": "売買",
     "property_type": null,
     "status": "募集中",
-    "price_label": "8,180万円",
-    "price_yen": 81800000,
+    "price_label": "7,690万円",
+    "price_yen": 76900000,
     "address": "神奈川県横浜市青葉区美しが丘2-10-3",
     "access": "東急田園都市線『たまプラーザ』駅徒歩8分",
     "layout": "2LDK",
@@ -8914,7 +8914,7 @@
     "raw_text": "差出人: ogawa@globalbase.jp\n\n【美しが丘ハイム415号室】\n物件名：美しが丘ハイム 415号室\n所在地：神奈川県横浜市青葉区美しが丘2-10-3\n価格8,180万円（間取り :2LDK、専有面積 :61.58㎡）\n交通：東急田園都市線『たまプラーザ』駅徒歩8分",
     "gmail_message_id": "1a13d2ef93c36896::1",
     "gmail_thread_id": "1a13d2ef93c36896",
-    "received_at": "2026-10-15T01:30:48",
+    "received_at": "2026-11-27T02:15:44",
     "created_at": "2026-10-15T23:19:44.251224"
   },
   {
@@ -11366,8 +11366,8 @@
     "transaction_type": "売買",
     "property_type": null,
     "status": "募集中",
-    "price_label": "15,800万円",
-    "price_yen": 158000000,
+    "price_label": "14,990万円",
+    "price_yen": 149900000,
     "address": "東京都台東区浅草3-22-5",
     "access": "東京メトロ銀座線『浅草』駅徒歩10分",
     "layout": "3LDK+WIC",
@@ -11384,7 +11384,7 @@
     "raw_text": "差出人: ogawa@globalbase.jp\n\n【ザ・パークハウス浅草701号室】\n物件名：ザ・パークハウス浅草 701号室\n所在地：東京都台東区浅草3-22-5\n価格15,800万円（間取り：3LDK+WIC、専有面積 : 71.83 ㎡）\n交通：東京メトロ銀座線『浅草』駅徒歩10分",
     "gmail_message_id": "1a1613b5c351dee7::2",
     "gmail_thread_id": "1a1613b5c351dee7",
-    "received_at": "2026-10-22T01:30:40",
+    "received_at": "2026-11-27T02:15:44",
     "created_at": "2026-10-22T23:17:03.527641"
   },
   {
@@ -12900,8 +12900,8 @@
     "transaction_type": "売買",
     "property_type": "マンション",
     "status": "募集中",
-    "price_label": "7,080万円(税込)",
-    "price_yen": 70800000,
+    "price_label": "6,980万円",
+    "price_yen": 69800000,
     "address": "東京都三鷹市下連雀4-15-35",
     "access": "JR中央線「三鷹」駅 徒歩9分",
     "layout": null,
@@ -12918,7 +12918,7 @@
     "raw_text": "差出人: youhei-kogawa@mugen-estate.co.jp\n\n【朝日三鷹マンション102号室】\n物件名：朝日三鷹マンション 102号室\n所在地：東京都三鷹市下連雀4-15-35\n交通：JR中央線「三鷹」駅 徒歩9分\n価格：7,080万円(税込)\n表面利回り：5.68%\n築年数：1977年5月\n構造：鉄骨鉄筋コンクリート造陸屋根8階建\n専有面積：69.53㎡（約21.03坪）\n現況：賃貸中（自転車屋）",
     "gmail_message_id": "1a18732a72dc3894::0",
     "gmail_thread_id": "1a18732a72dc3894",
-    "received_at": "2026-10-29T10:23:45",
+    "received_at": "2026-11-27T02:15:44",
     "created_at": "2026-10-29T23:17:16.182760"
   },
   {
@@ -12926,8 +12926,8 @@
     "transaction_type": "売買",
     "property_type": "マンション",
     "status": "募集中",
-    "price_label": "7,980万円(税込)",
-    "price_yen": 79800000,
+    "price_label": "7,780万円",
+    "price_yen": 77800000,
     "address": "東京都三鷹市下連雀4-15-35",
     "access": "JR中央線「三鷹」駅 徒歩9分",
     "layout": null,
@@ -12944,7 +12944,7 @@
     "raw_text": "差出人: youhei-kogawa@mugen-estate.co.jp\n\n【朝日三鷹マンション103号室】\n物件名：朝日三鷹マンション 103号室\n所在地：東京都三鷹市下連雀4-15-35\n交通：JR中央線「三鷹」駅 徒歩9分\n価格：7,980万円(税込)\n表面利回り：6.48%\n築年数：1977年5月\n構造：鉄骨鉄筋コンクリート造陸屋根8階建\n専有面積：76.35㎡（約23.09坪）\n現況：賃貸中（弁当屋）",
     "gmail_message_id": "1a18732a72dc3894::1",
     "gmail_thread_id": "1a18732a72dc3894",
-    "received_at": "2026-10-29T10:23:45",
+    "received_at": "2026-11-27T02:15:44",
     "created_at": "2026-10-29T23:17:16.185827"
   },
   {
@@ -13186,8 +13186,8 @@
     "transaction_type": "売買",
     "property_type": null,
     "status": "募集中",
-    "price_label": "5,790万円",
-    "price_yen": 57900000,
+    "price_label": "5,690万円",
+    "price_yen": 56900000,
     "address": "東京都杉並区成田東2-37-13",
     "access": "東京メトロ丸ノ内線『南阿佐ヶ谷』駅徒歩14分",
     "layout": "2LDK",
@@ -13204,7 +13204,7 @@
     "raw_text": "差出人: ogawa@globalbase.jp\n\n【朝日クレスパリオ南阿佐谷106号室】\n物件名：朝日クレスパリオ南阿佐谷 106号室\n所在地：東京都杉並区成田東2-37-13\n価格5,790万円（間取り：2LDK、専有面積 : 52.55㎡）\n交通：東京メトロ丸ノ内線『南阿佐ヶ谷』駅徒歩14分",
     "gmail_message_id": "1a18a6e5b56f6d08::2",
     "gmail_thread_id": "1a18a6e5b56f6d08",
-    "received_at": "2026-10-30T01:30:42",
+    "received_at": "2026-11-27T02:15:44",
     "created_at": "2026-10-30T23:15:45.373037"
   },
   {
@@ -15422,8 +15422,8 @@
     "transaction_type": "売買",
     "property_type": null,
     "status": "募集中",
-    "price_label": "9,480万円",
-    "price_yen": 94800000,
+    "price_label": "8,990万円",
+    "price_yen": 89900000,
     "address": "東京都江東区東陽1-30-8",
     "access": "東陽町駅 徒歩6分",
     "layout": "2LDK+TR",
@@ -15440,7 +15440,7 @@
     "raw_text": "差出人: kaitori@globalbase.jp\n\n東京都江東区東陽1-30-8\nアルス東陽町 501号室\n価格9,480万円（間取り :2LDK+TR、専有面積 :57.02 ㎡）\n交通 :\n東京メトロ東西線『東陽町』駅徒歩6分",
     "gmail_message_id": "1a1cd60fca5e02b2::g2",
     "gmail_thread_id": null,
-    "received_at": "2026-11-12T01:30:43",
+    "received_at": "2026-11-27T02:15:44",
     "created_at": "2026-11-12T23:18:52.942231"
   },
   {
@@ -19862,5 +19862,31 @@
     "gmail_thread_id": null,
     "received_at": "2026-11-26T00:30:06",
     "created_at": "2026-11-26T23:17:08.375803"
+  },
+  {
+    "title": "ダイアパレス池袋 1301号室",
+    "transaction_type": "売買",
+    "property_type": null,
+    "status": "募集中",
+    "price_label": "11,990万円",
+    "price_yen": 119900000,
+    "address": "東京都豊島区池袋2-73-5",
+    "access": "池袋駅 徒歩7分",
+    "layout": "3LDK+TR",
+    "area_sqm": 72.57,
+    "built_year": null,
+    "agent_name": null,
+    "land_tsubo_label": null,
+    "building_tsubo_label": null,
+    "structure": null,
+    "units": null,
+    "yield_label": null,
+    "source_type": "gmail",
+    "source_filename": null,
+    "raw_text": "差出人: kaitori@globalbase.jp\n\n東京都豊島区池袋2-73-5\nダイアパレス池袋　1301号室\n価格11,990万円（間取り : 3LDK+TR、専有面積 :72.57  ㎡）\n交通 :\nJR山手線・JR湘南新宿ライン『池袋』駅徒歩7分",
+    "gmail_message_id": "1a21ac98d483bf5c::g1",
+    "gmail_thread_id": null,
+    "received_at": "2026-11-27T02:15:44",
+    "created_at": "2026-11-27T23:15:49.667638"
   }
 ]
